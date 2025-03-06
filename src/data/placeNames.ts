@@ -58,7 +58,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "9",
     name: "Takapuna",
-    audioUrl: "https://audio.pronouncekiwi.com/Takapuna.mp3",
+    audioUrl: "https://www.maoriplacenamepronunciation.co.nz/assets/audio/takapuna.mp3",
     description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
   }
 ];

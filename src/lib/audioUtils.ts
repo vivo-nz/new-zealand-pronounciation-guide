@@ -29,6 +29,17 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   audioInstance.addEventListener('error', (e) => {
     console.error('Error playing audio:', e);
     console.log('Failed audio URL:', audioUrl);
+    
+    // Provide a more user-friendly response
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded';
+    toast.innerHTML = `<strong>Audio Error:</strong> Could not play pronunciation audio.`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 5000);
+    
     if (onEnd) onEnd();
     audioInstance = null;
   });
