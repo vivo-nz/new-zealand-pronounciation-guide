@@ -42,6 +42,4 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
   );
 };
 
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
-
 export default PronunciationCard;
