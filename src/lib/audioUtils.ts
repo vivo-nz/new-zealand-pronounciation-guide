@@ -27,17 +27,38 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     });
   }
 
-  // Handle errors
+  // Handle errors with detailed logging
   audioInstance.addEventListener('error', (e) => {
     const error = audioInstance?.error;
     console.error('Error playing audio:', e);
     console.log('Failed audio URL:', audioUrl);
-    console.log('Audio error details:', error?.message || 'Unknown error');
+    console.log('Audio error code:', error?.code);
+    console.log('Audio error message:', error?.message);
+    
+    let errorMessage = "Could not play pronunciation audio.";
+    
+    // Provide more specific error messages based on the error code
+    if (error) {
+      switch(error.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+          errorMessage = "Audio playback was aborted.";
+          break;
+        case MediaError.MEDIA_ERR_NETWORK:
+          errorMessage = "Network error occurred while loading audio.";
+          break;
+        case MediaError.MEDIA_ERR_DECODE:
+          errorMessage = "Audio format not supported or corrupted.";
+          break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          errorMessage = "Audio format not supported by your browser.";
+          break;
+      }
+    }
     
     // Show toast notification with shadcn/ui
     toast({
       title: "Audio Error",
-      description: `Could not play audio: ${error?.message || 'Format not supported'}`,
+      description: errorMessage,
       variant: "destructive",
     });
     
@@ -54,7 +75,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       // Show toast notification with shadcn/ui
       toast({
         title: "Audio Error",
-        description: "Could not play pronunciation audio. The format may not be supported.",
+        description: "Could not play pronunciation audio. Please check the audio format.",
         variant: "destructive",
       });
       

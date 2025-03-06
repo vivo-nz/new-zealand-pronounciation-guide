@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -58,7 +57,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "9",
     name: "Takapuna",
-    audioUrl: "https://assets.mixkit.co/active_storage/sfx/2566/2566.mp3", // Using a reliable MP3 hosting source
+    audioUrl: "https://raw.githubusercontent.com/USERNAME/REPO-NAME/main/audio/takapuna.mp3",
     description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
   }
 ];
