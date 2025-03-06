@@ -11,6 +11,9 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   // Create and play new audio
   audioInstance = new Audio(audioUrl);
   
+  // Set up CORS attributes if needed
+  audioInstance.crossOrigin = "anonymous";
+  
   if (onPlay) {
     audioInstance.addEventListener('playing', onPlay);
   }
@@ -25,6 +28,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   // Handle errors
   audioInstance.addEventListener('error', (e) => {
     console.error('Error playing audio:', e);
+    console.log('Failed audio URL:', audioUrl);
     if (onEnd) onEnd();
     audioInstance = null;
   });
@@ -33,6 +37,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   setTimeout(() => {
     audioInstance?.play().catch(err => {
       console.error('Failed to play audio:', err);
+      console.log('Failed audio URL details:', audioUrl);
       if (onEnd) onEnd();
       audioInstance = null;
     });
