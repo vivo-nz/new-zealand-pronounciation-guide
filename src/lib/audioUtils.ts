@@ -13,8 +13,11 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   // Create and play new audio
   audioInstance = new Audio(audioUrl);
   
-  // Set up CORS attributes if needed
+  // Set up CORS attributes
   audioInstance.crossOrigin = "anonymous";
+  
+  // Add a console log to debug the audio URL
+  console.log("Attempting to play audio from:", audioUrl);
   
   if (onPlay) {
     audioInstance.addEventListener('playing', onPlay);
@@ -44,13 +47,13 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
           errorMessage = "Audio playback was aborted.";
           break;
         case MediaError.MEDIA_ERR_NETWORK:
-          errorMessage = "Network error occurred while loading audio.";
+          errorMessage = "Network error occurred while loading audio. Check your internet connection.";
           break;
         case MediaError.MEDIA_ERR_DECODE:
-          errorMessage = "Audio format not supported or corrupted.";
+          errorMessage = "Audio format not supported or corrupted. Try a different audio format like .mp3 or .ogg.";
           break;
         case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = "Audio format not supported by your browser.";
+          errorMessage = "Audio format not supported by your browser. Try using .mp3 instead of .ogg or vice versa.";
           break;
       }
     }
@@ -75,7 +78,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       // Show toast notification with shadcn/ui
       toast({
         title: "Audio Error",
-        description: "Could not play pronunciation audio. Please check the audio format.",
+        description: "Could not play pronunciation audio. Try using a standard format like MP3 or OGG hosted on a reliable server.",
         variant: "destructive",
       });
       
