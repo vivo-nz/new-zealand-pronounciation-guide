@@ -29,13 +29,15 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
 
   // Handle errors
   audioInstance.addEventListener('error', (e) => {
+    const error = audioInstance?.error;
     console.error('Error playing audio:', e);
     console.log('Failed audio URL:', audioUrl);
+    console.log('Audio error details:', error?.message || 'Unknown error');
     
     // Show toast notification with shadcn/ui
     toast({
       title: "Audio Error",
-      description: "Could not play pronunciation audio.",
+      description: `Could not play audio: ${error?.message || 'Format not supported'}`,
       variant: "destructive",
     });
     
@@ -52,7 +54,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       // Show toast notification with shadcn/ui
       toast({
         title: "Audio Error",
-        description: "Could not play pronunciation audio.",
+        description: "Could not play pronunciation audio. The format may not be supported.",
         variant: "destructive",
       });
       
