@@ -54,5 +54,11 @@ export const placeNames: PlaceName[] = [
     name: "Bournemouth",
     audioUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c3/LL-Q1860_%28eng%29-Vealhurl-Bournemouth.wav",
     description: "Town in England, pronounced 'BORN-muth', not 'BORN-mouth'"
+  },
+  {
+    id: "9",
+    name: "Takapuna",
+    audioUrl: "https://drive.google.com/uc?export=download&id=1EQddtjcoPHE2Yz8EVUBbX6Ykfuq0pq-w",
+    description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
   }
 ];
