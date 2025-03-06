@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import SearchBar from '@/components/SearchBar';
 import PlaceNameList from '@/components/PlaceNameList';
 import { placeNames } from '@/data/placeNames';
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,6 +60,8 @@ const Index = () => {
           <p className="mt-1">Additional place names can be added by the admin team.</p>
         </motion.div>
       </motion.div>
+      
+      <Toaster />
     </div>
   );
 };
