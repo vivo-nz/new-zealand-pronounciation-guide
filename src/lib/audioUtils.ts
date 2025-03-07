@@ -48,6 +48,35 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
+// Helper to add CORS proxy for external resources if needed
+const addCorsProxyIfNeeded = (url: string): string => {
+  // Skip for local URLs
+  if (isLocalUrl(url)) {
+    return url;
+  }
+  
+  // Skip for URLs already using a proxy
+  if (url.includes('cors-anywhere') || url.includes('corsproxy')) {
+    return url;
+  }
+  
+  // For external URLs, consider using a CORS proxy
+  // Only do this for specific domains that we know have CORS issues
+  const problematicDomains = [
+    'upload.wikimedia.org',
+    'commons.wikimedia.org'
+  ];
+  
+  const needsProxy = problematicDomains.some(domain => url.includes(domain));
+  
+  if (needsProxy) {
+    // Use a public CORS proxy (note: for production, you should use your own proxy)
+    return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+  }
+  
+  return url;
+};
+
 // Function to handle SoundCloud URLs
 const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
   // Try to match the URL pattern to extract the track ID or username/track-name
@@ -91,13 +120,15 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     return;
   }
 
-  // If it's a local URL, no additional processing needed
   // If it's a Google Drive URL, convert to direct URL
   if (isGoogleDriveUrl(audioUrl)) {
     audioUrl = getGoogleDriveDirectUrl(audioUrl);
     console.log("Converted Google Drive URL to:", audioUrl);
   }
-
+  
+  // Apply CORS proxy if needed
+  audioUrl = addCorsProxyIfNeeded(audioUrl);
+  
   // Stop any currently playing audio
   if (audioInstance) {
     audioInstance.pause();
