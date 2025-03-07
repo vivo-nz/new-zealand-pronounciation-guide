@@ -8,24 +8,59 @@ const isSoundCloudUrl = (url: string): boolean => {
   return url.includes('soundcloud.com');
 };
 
+// Function to extract the SoundCloud track ID from a URL
+const extractSoundCloudTrackId = (url: string): string | null => {
+  // Try to match the URL pattern to extract the track ID or username/track-name
+  const match = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/);
+  return match ? match[1] : null;
+};
+
 // Function to handle SoundCloud URLs
 const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
-  // For SoundCloud links, we need to open them in a new tab as the API requires authentication
-  // and embedding isn't straightforward without the SoundCloud API
-  window.open(url, '_blank');
+  const trackPath = extractSoundCloudTrackId(url);
   
-  // Since we're opening in a new tab, we can't track play/end states
-  // so we'll simulate them for the UI
+  if (!trackPath) {
+    console.error('Could not extract SoundCloud track information from URL:', url);
+    toast({
+      title: "Audio Error",
+      description: "Could not process SoundCloud link. Please try a direct audio file.",
+      variant: "destructive",
+    });
+    if (onEnd) onEnd();
+    return;
+  }
+
+  // Create an iframe with the SoundCloud embedded player
+  const iframeContainer = document.createElement('div');
+  iframeContainer.style.position = 'absolute';
+  iframeContainer.style.top = '-9999px';
+  iframeContainer.style.left = '-9999px';
+  
+  const iframe = document.createElement('iframe');
+  iframe.width = '100%';
+  iframe.height = '166';
+  iframe.allow = 'autoplay';
+  iframe.src = `https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${trackPath}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
+  
+  iframeContainer.appendChild(iframe);
+  document.body.appendChild(iframeContainer);
+  
+  // Notify that we're attempting to play
   if (onPlay) onPlay();
   
-  // Simulate end after a reasonable time
+  // We'll simulate the end event since we can't easily detect when the embedded audio ends
   setTimeout(() => {
     if (onEnd) onEnd();
-  }, 2000);
+    // Remove the iframe after playback
+    setTimeout(() => {
+      document.body.removeChild(iframeContainer);
+    }, 500);
+  }, 8000); // Assume the audio plays for approximately 8 seconds
   
+  // Notify the user that we're playing embedded audio
   toast({
-    title: "SoundCloud Audio",
-    description: "Opening SoundCloud link in a new tab. Please play the audio there.",
+    title: "Playing Audio",
+    description: "Playing SoundCloud audio. This is embedded and may take a moment to load.",
     variant: "default",
   });
 };
