@@ -88,11 +88,31 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
   }, 5000);
 };
 
+// Function to ensure GitHub raw URLs are correctly formatted
+const getGitHubRawUrl = (url: string): string => {
+  // Convert any GitHub URL to a raw.githubusercontent.com URL if needed
+  if (url.includes('github.com') && !url.includes('raw.githubusercontent.com')) {
+    if (url.includes('/raw/')) {
+      // Attempt to convert github.com/user/repo/raw/branch/path to raw.githubusercontent.com format
+      return url
+        .replace('github.com', 'raw.githubusercontent.com')
+        .replace('/raw/', '/');
+    }
+  }
+  return url;
+};
+
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
     handleSoundCloudUrl(audioUrl, onPlay, onEnd);
     return;
+  }
+
+  // If it's a GitHub URL, ensure it's properly formatted
+  if (isGitHubUrl(audioUrl)) {
+    audioUrl = getGitHubRawUrl(audioUrl);
+    console.log("Processed GitHub URL to:", audioUrl);
   }
 
   // If it's a Google Drive URL, convert to direct URL
