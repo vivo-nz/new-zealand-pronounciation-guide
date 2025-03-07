@@ -7,6 +7,11 @@ const isSoundCloudUrl = (url: string): boolean => {
   return url.includes('soundcloud.com');
 };
 
+// Helper to check if a URL is from GitHub
+const isGitHubUrl = (url: string): boolean => {
+  return url.includes('github');
+};
+
 // Helper to check if a URL is local (starting with '/')
 const isLocalUrl = (url: string): boolean => {
   return url.startsWith('/');
@@ -47,36 +52,6 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
-// Helper to add CORS proxy for external resources if needed
-const addCorsProxyIfNeeded = (url: string): string => {
-  // Skip for local URLs
-  if (isLocalUrl(url)) {
-    return url;
-  }
-  
-  // Skip for URLs already using a proxy
-  if (url.includes('cors-anywhere') || url.includes('corsproxy')) {
-    return url;
-  }
-  
-  // For external URLs, consider using a CORS proxy
-  // Only do this for specific domains that we know have CORS issues
-  const problematicDomains = [
-    'upload.wikimedia.org',
-    'commons.wikimedia.org',
-    'audio.oxforddictionaries.com'
-  ];
-  
-  const needsProxy = problematicDomains.some(domain => url.includes(domain));
-  
-  if (needsProxy) {
-    // Use a public CORS proxy (note: for production, you should use your own proxy)
-    return `https://corsproxy.io/?${encodeURIComponent(url)}`;
-  }
-  
-  return url;
-};
-
 // Function to handle SoundCloud URLs
 const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
   // Try to match the URL pattern to extract the track ID or username/track-name
@@ -113,11 +88,6 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
   }, 5000);
 };
 
-// Helper to check if URL is from Merriam-Webster
-const isMerriamWebsterUrl = (url: string): boolean => {
-  return url.includes('merriam-webster.com') || url.includes('m-w.com');
-};
-
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
@@ -131,9 +101,6 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     console.log("Converted Google Drive URL to:", audioUrl);
   }
   
-  // Apply CORS proxy if needed
-  audioUrl = addCorsProxyIfNeeded(audioUrl);
-  
   // Stop any currently playing audio
   if (audioInstance) {
     audioInstance.pause();
@@ -143,10 +110,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   // Create and play new audio
   audioInstance = new Audio(audioUrl);
   
-  // Set up CORS attributes
-  audioInstance.crossOrigin = "anonymous";
-  
-  // Add a console log to debug the audio URL
+  // Log the audio URL being used
   console.log("Attempting to play audio from:", audioUrl);
   
   if (onPlay) {
@@ -158,13 +122,6 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       onEnd();
       audioInstance = null;
     });
-  }
-
-  // Special handling for Merriam-Webster URLs
-  if (isMerriamWebsterUrl(audioUrl)) {
-    // Merriam-Webster audio files require special handling for CORS
-    audioInstance.crossOrigin = "anonymous";
-    console.log("Using Merriam-Webster audio source");
   }
 
   // Handle errors with detailed logging
