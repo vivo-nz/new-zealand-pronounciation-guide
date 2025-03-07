@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -93,37 +92,28 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
 const getGitHubRawUrl = (url: string): string => {
   console.log("Processing GitHub URL:", url);
   
-  // If it's already properly formatted as a raw GitHub URL without any special patterns
-  if (url.startsWith('https://raw.githubusercontent.com/') && 
-      !url.includes('/raw/') && 
-      !url.includes('/blob/') && 
-      !url.includes('/tree/')) {
-    console.log("URL is already a proper raw GitHub URL");
+  // For GitHub URLs with /raw/ in the path (which is what we want for direct MP3 access)
+  if (url.includes('/raw/')) {
+    // Keep the URL as is - it's already in the right format for direct audio access
+    console.log("URL already contains /raw/ path, keeping as is");
     return url;
   }
   
-  // Handle URLs with /raw/ in them
-  if (url.includes('/raw/')) {
-    const newUrl = url
-      .replace('github.com', 'raw.githubusercontent.com')
-      .replace('/raw/', '/');
-    console.log("Converted /raw/ URL to:", newUrl);
-    return newUrl;
-  }
-  
-  // Handle standard GitHub URLs
-  const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/tree\/|\/blob\/|\/)?([^\/]+)?\/?(.*)?/;
-  const match = url.match(githubPattern);
-  
-  if (match) {
-    const user = match[1];
-    const repo = match[2];
-    const branch = match[4] || 'main';
-    const path = match[5] || '';
+  // Handle standard GitHub repo URLs
+  if (url.includes('github.com') && !url.includes('raw.githubusercontent.com')) {
+    const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/blob\/|\/)?([^\/]+)?\/?(.*)?/;
+    const match = url.match(githubPattern);
     
-    const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
-    console.log("Converted standard GitHub URL to:", newUrl);
-    return newUrl;
+    if (match) {
+      const user = match[1];
+      const repo = match[2];
+      const branch = match[4] || 'main';
+      const path = match[5] || '';
+      
+      const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+      console.log("Converted standard GitHub URL to:", newUrl);
+      return newUrl;
+    }
   }
   
   console.log("No conversion needed or pattern not recognized, returning original URL");
@@ -140,20 +130,21 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   }
 
   // If it's a GitHub URL, ensure it's properly formatted
+  let processedUrl = audioUrl;
   if (isGitHubUrl(audioUrl)) {
-    audioUrl = getGitHubRawUrl(audioUrl);
-    console.log("Processed GitHub URL to:", audioUrl);
+    processedUrl = getGitHubRawUrl(audioUrl);
+    console.log("Processed GitHub URL to:", processedUrl);
   }
 
   // If it's a Google Drive URL, convert to direct URL
-  if (isGoogleDriveUrl(audioUrl)) {
-    audioUrl = getGoogleDriveDirectUrl(audioUrl);
-    console.log("Converted Google Drive URL to:", audioUrl);
+  if (isGoogleDriveUrl(processedUrl)) {
+    processedUrl = getGoogleDriveDirectUrl(processedUrl);
+    console.log("Converted Google Drive URL to:", processedUrl);
   }
   
   // Add a cache buster to avoid caching issues
-  audioUrl = audioUrl + (audioUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
-  console.log("Final audio URL with cache buster:", audioUrl);
+  processedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
+  console.log("Final audio URL with cache buster:", processedUrl);
   
   // Stop any currently playing audio
   if (audioInstance) {
@@ -162,10 +153,11 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   }
 
   // Create and play new audio
-  audioInstance = new Audio(audioUrl);
+  audioInstance = new Audio(processedUrl);
+  audioInstance.crossOrigin = "anonymous"; // Add this to handle CORS issues
   
   // Log the audio URL being used
-  console.log("Attempting to play audio from:", audioUrl);
+  console.log("Attempting to play audio from:", processedUrl);
   
   if (onPlay) {
     audioInstance.addEventListener('playing', onPlay);
@@ -182,7 +174,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   audioInstance.addEventListener('error', (e) => {
     const error = audioInstance?.error;
     console.error('Error playing audio:', e);
-    console.log('Failed audio URL:', audioUrl);
+    console.log('Failed audio URL:', processedUrl);
     console.log('Audio error code:', error?.code);
     console.log('Audio error message:', error?.message);
     
@@ -221,7 +213,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   setTimeout(() => {
     audioInstance?.play().catch(err => {
       console.error('Failed to play audio:', err);
-      console.log('Failed audio URL details:', audioUrl);
+      console.log('Failed audio URL details:', processedUrl);
       
       // Show toast notification with shadcn/ui
       toast({
