@@ -30,39 +30,24 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
     return;
   }
 
-  // Create an iframe with the SoundCloud embedded player
-  const iframeContainer = document.createElement('div');
-  iframeContainer.style.position = 'absolute';
-  iframeContainer.style.top = '-9999px';
-  iframeContainer.style.left = '-9999px';
+  // We need to use window.open as SoundCloud's embedded iframe has security restrictions
+  // that prevent autoplay in many browsers without user interaction
+  window.open(url, '_blank');
   
-  const iframe = document.createElement('iframe');
-  iframe.width = '100%';
-  iframe.height = '166';
-  iframe.allow = 'autoplay';
-  iframe.src = `https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${trackPath}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false`;
-  
-  iframeContainer.appendChild(iframe);
-  document.body.appendChild(iframeContainer);
-  
-  // Notify that we're attempting to play
-  if (onPlay) onPlay();
-  
-  // We'll simulate the end event since we can't easily detect when the embedded audio ends
-  setTimeout(() => {
-    if (onEnd) onEnd();
-    // Remove the iframe after playback
-    setTimeout(() => {
-      document.body.removeChild(iframeContainer);
-    }, 500);
-  }, 8000); // Assume the audio plays for approximately 8 seconds
-  
-  // Notify the user that we're playing embedded audio
+  // Since we're opening in a new tab, we need to notify the user
   toast({
-    title: "Playing Audio",
-    description: "Playing SoundCloud audio. This is embedded and may take a moment to load.",
+    title: "SoundCloud Audio",
+    description: "SoundCloud audio opened in a new tab. Please play it there for the best experience.",
     variant: "default",
   });
+  
+  // Simulate playback for UI purposes
+  if (onPlay) onPlay();
+  
+  // Simulate end after a reasonable time for UI to return to normal
+  setTimeout(() => {
+    if (onEnd) onEnd();
+  }, 5000);
 };
 
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
