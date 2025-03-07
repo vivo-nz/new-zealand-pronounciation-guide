@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -91,14 +92,34 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
 // Function to ensure GitHub raw URLs are correctly formatted
 const getGitHubRawUrl = (url: string): string => {
   // Convert any GitHub URL to a raw.githubusercontent.com URL if needed
-  if (url.includes('github.com') && !url.includes('raw.githubusercontent.com')) {
+  if (url.includes('github.com')) {
+    // If it's already a raw.githubusercontent.com URL, return it as is
+    if (url.includes('raw.githubusercontent.com')) {
+      return url;
+    }
+    
+    // Handle the "/raw/" format in the URL
     if (url.includes('/raw/')) {
-      // Attempt to convert github.com/user/repo/raw/branch/path to raw.githubusercontent.com format
       return url
         .replace('github.com', 'raw.githubusercontent.com')
         .replace('/raw/', '/');
     }
+    
+    // Handle standard GitHub URLs
+    // Extract the user/repo/branch/path pattern
+    const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/tree\/|\/blob\/|\/raw\/|\/)?([^\/]+)?\/?(.*)?/;
+    const match = url.match(githubPattern);
+    
+    if (match) {
+      const user = match[1];
+      const repo = match[2];
+      const branch = match[4] || 'main';
+      const path = match[5] || '';
+      
+      return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+    }
   }
+  
   return url;
 };
 
