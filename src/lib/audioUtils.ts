@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -92,28 +93,62 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
 const getGitHubRawUrl = (url: string): string => {
   console.log("Processing GitHub URL:", url);
   
-  // For GitHub URLs with /raw/ in the path (which is what we want for direct MP3 access)
-  if (url.includes('/raw/')) {
-    // Keep the URL as is - it's already in the right format for direct audio access
-    console.log("URL already contains /raw/ path, keeping as is");
-    return url;
-  }
-  
-  // Handle standard GitHub repo URLs
-  if (url.includes('github.com') && !url.includes('raw.githubusercontent.com')) {
-    const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/blob\/|\/)?([^\/]+)?\/?(.*)?/;
+  // Always convert GitHub URLs to raw.githubusercontent.com format for direct access
+  if (url.includes('github.com')) {
+    // Handle URLs with raw in the path, typical format: github.com/user/repo/raw/branch/path
+    if (url.includes('/raw/')) {
+      const rawPattern = /github\.com\/([^\/]+)\/([^\/]+)\/raw\/([^\/]+)\/(.*)/;
+      const match = url.match(rawPattern);
+      
+      if (match) {
+        const user = match[1];
+        const repo = match[2];
+        const branch = match[3];
+        const path = match[4];
+        
+        const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+        console.log("Converted GitHub /raw/ URL to raw.githubusercontent.com:", newUrl);
+        return newUrl;
+      }
+    }
+    
+    // Handle standard GitHub blob URLs
+    if (url.includes('/blob/')) {
+      const blobPattern = /github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.*)/;
+      const match = url.match(blobPattern);
+      
+      if (match) {
+        const user = match[1];
+        const repo = match[2];
+        const branch = match[3];
+        const path = match[4];
+        
+        const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+        console.log("Converted GitHub /blob/ URL to raw.githubusercontent.com:", newUrl);
+        return newUrl;
+      }
+    }
+    
+    // General case for other GitHub URLs
+    const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(?:\/tree\/|\/)?([^\/]+)?\/?(.*)?/;
     const match = url.match(githubPattern);
     
     if (match) {
       const user = match[1];
       const repo = match[2];
-      const branch = match[4] || 'main';
-      const path = match[5] || '';
+      const branch = match[3] || 'main';
+      const path = match[4] || '';
       
       const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
-      console.log("Converted standard GitHub URL to:", newUrl);
+      console.log("Converted GitHub URL to raw.githubusercontent.com:", newUrl);
       return newUrl;
     }
+  }
+  
+  // If it's already a raw.githubusercontent.com URL, return as is
+  if (url.includes('raw.githubusercontent.com')) {
+    console.log("URL is already a raw.githubusercontent.com URL");
+    return url;
   }
   
   console.log("No conversion needed or pattern not recognized, returning original URL");
@@ -129,7 +164,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     return;
   }
 
-  // If it's a GitHub URL, ensure it's properly formatted
+  // If it's a GitHub URL, ensure it's properly formatted for direct access
   let processedUrl = audioUrl;
   if (isGitHubUrl(audioUrl)) {
     processedUrl = getGitHubRawUrl(audioUrl);
@@ -154,7 +189,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
 
   // Create and play new audio
   audioInstance = new Audio(processedUrl);
-  audioInstance.crossOrigin = "anonymous"; // Add this to handle CORS issues
+  audioInstance.crossOrigin = "anonymous"; // Handle CORS issues
   
   // Log the audio URL being used
   console.log("Attempting to play audio from:", processedUrl);
