@@ -91,39 +91,48 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
 
 // Function to ensure GitHub raw URLs are correctly formatted
 const getGitHubRawUrl = (url: string): string => {
-  // Convert any GitHub URL to a raw.githubusercontent.com URL if needed
-  if (url.includes('github.com')) {
-    // If it's already a raw.githubusercontent.com URL, return it as is
-    if (url.includes('raw.githubusercontent.com')) {
-      return url;
-    }
-    
-    // Handle the "/raw/" format in the URL
-    if (url.includes('/raw/')) {
-      return url
-        .replace('github.com', 'raw.githubusercontent.com')
-        .replace('/raw/', '/');
-    }
-    
-    // Handle standard GitHub URLs
-    // Extract the user/repo/branch/path pattern
-    const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/tree\/|\/blob\/|\/raw\/|\/)?([^\/]+)?\/?(.*)?/;
-    const match = url.match(githubPattern);
-    
-    if (match) {
-      const user = match[1];
-      const repo = match[2];
-      const branch = match[4] || 'main';
-      const path = match[5] || '';
-      
-      return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
-    }
+  console.log("Processing GitHub URL:", url);
+  
+  // If it's already properly formatted as a raw GitHub URL without any special patterns
+  if (url.startsWith('https://raw.githubusercontent.com/') && 
+      !url.includes('/raw/') && 
+      !url.includes('/blob/') && 
+      !url.includes('/tree/')) {
+    console.log("URL is already a proper raw GitHub URL");
+    return url;
   }
   
+  // Handle URLs with /raw/ in them
+  if (url.includes('/raw/')) {
+    const newUrl = url
+      .replace('github.com', 'raw.githubusercontent.com')
+      .replace('/raw/', '/');
+    console.log("Converted /raw/ URL to:", newUrl);
+    return newUrl;
+  }
+  
+  // Handle standard GitHub URLs
+  const githubPattern = /github\.com\/([^\/]+)\/([^\/]+)(\/tree\/|\/blob\/|\/)?([^\/]+)?\/?(.*)?/;
+  const match = url.match(githubPattern);
+  
+  if (match) {
+    const user = match[1];
+    const repo = match[2];
+    const branch = match[4] || 'main';
+    const path = match[5] || '';
+    
+    const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+    console.log("Converted standard GitHub URL to:", newUrl);
+    return newUrl;
+  }
+  
+  console.log("No conversion needed or pattern not recognized, returning original URL");
   return url;
 };
 
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
+  console.log("Original audio URL:", audioUrl);
+
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
     handleSoundCloudUrl(audioUrl, onPlay, onEnd);
@@ -141,6 +150,10 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     audioUrl = getGoogleDriveDirectUrl(audioUrl);
     console.log("Converted Google Drive URL to:", audioUrl);
   }
+  
+  // Add a cache buster to avoid caching issues
+  audioUrl = audioUrl + (audioUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
+  console.log("Final audio URL with cache buster:", audioUrl);
   
   // Stop any currently playing audio
   if (audioInstance) {
@@ -188,7 +201,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
           errorMessage = "Audio format not supported or corrupted. Try a different audio format like .mp3 or .ogg.";
           break;
         case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = "Audio format not supported by your browser. Try using .mp3 instead of .ogg or vice versa.";
+          errorMessage = "Audio format not supported by your browser. The audio file might be corrupted or in an unsupported format.";
           break;
       }
     }
@@ -196,7 +209,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     // Show toast notification with shadcn/ui
     toast({
       title: "Audio Error",
-      description: errorMessage,
+      description: errorMessage + " Please try a different audio file or format.",
       variant: "destructive",
     });
     
@@ -213,7 +226,7 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       // Show toast notification with shadcn/ui
       toast({
         title: "Audio Error",
-        description: "Could not play pronunciation audio. Try using a standard format like MP3 or OGG hosted on a reliable server.",
+        description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
         variant: "destructive",
       });
       
