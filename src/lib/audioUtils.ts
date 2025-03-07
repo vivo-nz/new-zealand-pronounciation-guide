@@ -8,6 +8,11 @@ const isSoundCloudUrl = (url: string): boolean => {
   return url.includes('soundcloud.com');
 };
 
+// Helper to check if a URL is local (starting with '/')
+const isLocalUrl = (url: string): boolean => {
+  return url.startsWith('/');
+};
+
 // Helper to check if a URL is from Google Drive
 const isGoogleDriveUrl = (url: string): boolean => {
   return url.includes('drive.google.com');
@@ -43,16 +48,10 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
-// Function to extract the SoundCloud track ID from a URL
-const extractSoundCloudTrackId = (url: string): string | null => {
-  // Try to match the URL pattern to extract the track ID or username/track-name
-  const match = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/);
-  return match ? match[1] : null;
-};
-
 // Function to handle SoundCloud URLs
 const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
-  const trackPath = extractSoundCloudTrackId(url);
+  // Try to match the URL pattern to extract the track ID or username/track-name
+  const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
   
   if (!trackPath) {
     console.error('Could not extract SoundCloud track information from URL:', url);
@@ -92,7 +91,8 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     return;
   }
 
-  // Check if it's a Google Drive URL and convert to direct URL if needed
+  // If it's a local URL, no additional processing needed
+  // If it's a Google Drive URL, convert to direct URL
   if (isGoogleDriveUrl(audioUrl)) {
     audioUrl = getGoogleDriveDirectUrl(audioUrl);
     console.log("Converted Google Drive URL to:", audioUrl);
