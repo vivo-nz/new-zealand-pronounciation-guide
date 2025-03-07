@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -64,7 +63,8 @@ const addCorsProxyIfNeeded = (url: string): string => {
   // Only do this for specific domains that we know have CORS issues
   const problematicDomains = [
     'upload.wikimedia.org',
-    'commons.wikimedia.org'
+    'commons.wikimedia.org',
+    'audio.oxforddictionaries.com'
   ];
   
   const needsProxy = problematicDomains.some(domain => url.includes(domain));
@@ -113,6 +113,11 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
   }, 5000);
 };
 
+// Helper to check if URL is from Merriam-Webster
+const isMerriamWebsterUrl = (url: string): boolean => {
+  return url.includes('merriam-webster.com') || url.includes('m-w.com');
+};
+
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
@@ -153,6 +158,13 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
       onEnd();
       audioInstance = null;
     });
+  }
+
+  // Special handling for Merriam-Webster URLs
+  if (isMerriamWebsterUrl(audioUrl)) {
+    // Merriam-Webster audio files require special handling for CORS
+    audioInstance.crossOrigin = "anonymous";
+    console.log("Using Merriam-Webster audio source");
   }
 
   // Handle errors with detailed logging
