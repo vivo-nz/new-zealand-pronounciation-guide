@@ -3,7 +3,40 @@ import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
 
+// Helper to check if a URL is from SoundCloud
+const isSoundCloudUrl = (url: string): boolean => {
+  return url.includes('soundcloud.com');
+};
+
+// Function to handle SoundCloud URLs
+const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
+  // For SoundCloud links, we need to open them in a new tab as the API requires authentication
+  // and embedding isn't straightforward without the SoundCloud API
+  window.open(url, '_blank');
+  
+  // Since we're opening in a new tab, we can't track play/end states
+  // so we'll simulate them for the UI
+  if (onPlay) onPlay();
+  
+  // Simulate end after a reasonable time
+  setTimeout(() => {
+    if (onEnd) onEnd();
+  }, 2000);
+  
+  toast({
+    title: "SoundCloud Audio",
+    description: "Opening SoundCloud link in a new tab. Please play the audio there.",
+    variant: "default",
+  });
+};
+
 export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
+  // Check if it's a SoundCloud URL
+  if (isSoundCloudUrl(audioUrl)) {
+    handleSoundCloudUrl(audioUrl, onPlay, onEnd);
+    return;
+  }
+
   // Stop any currently playing audio
   if (audioInstance) {
     audioInstance.pause();
