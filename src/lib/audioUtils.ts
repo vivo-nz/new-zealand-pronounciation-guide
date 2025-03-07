@@ -8,6 +8,41 @@ const isSoundCloudUrl = (url: string): boolean => {
   return url.includes('soundcloud.com');
 };
 
+// Helper to check if a URL is from Google Drive
+const isGoogleDriveUrl = (url: string): boolean => {
+  return url.includes('drive.google.com');
+};
+
+// Function to convert Google Drive sharing URL to direct download URL
+const getGoogleDriveDirectUrl = (url: string): string => {
+  // Extract the file ID from the Google Drive URL
+  let fileId = '';
+  
+  // Pattern for links like https://drive.google.com/file/d/{fileId}/view
+  const filePattern = /\/file\/d\/([^\/]+)/;
+  const fileMatch = url.match(filePattern);
+  
+  if (fileMatch && fileMatch[1]) {
+    fileId = fileMatch[1];
+  } else {
+    // Pattern for links like https://drive.google.com/open?id={fileId}
+    const openPattern = /[?&]id=([^&]+)/;
+    const openMatch = url.match(openPattern);
+    
+    if (openMatch && openMatch[1]) {
+      fileId = openMatch[1];
+    }
+  }
+  
+  if (!fileId) {
+    console.error('Could not extract file ID from Google Drive URL:', url);
+    return url; // Return original if we can't extract ID
+  }
+  
+  // Convert to direct download URL
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+};
+
 // Function to extract the SoundCloud track ID from a URL
 const extractSoundCloudTrackId = (url: string): string | null => {
   // Try to match the URL pattern to extract the track ID or username/track-name
@@ -55,6 +90,12 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
   if (isSoundCloudUrl(audioUrl)) {
     handleSoundCloudUrl(audioUrl, onPlay, onEnd);
     return;
+  }
+
+  // Check if it's a Google Drive URL and convert to direct URL if needed
+  if (isGoogleDriveUrl(audioUrl)) {
+    audioUrl = getGoogleDriveDirectUrl(audioUrl);
+    console.log("Converted Google Drive URL to:", audioUrl);
   }
 
   // Stop any currently playing audio
