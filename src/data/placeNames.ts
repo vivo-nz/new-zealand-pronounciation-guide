@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -594,5 +593,11 @@ export const placeNames: PlaceName[] = [
     name: "Whangarei",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
     description: "Northernmost city in New Zealand"
+  },
+  {
+    id: "99",
+    name: "Taranaki",
+    audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
+    description: "Region on the west coast of New Zealand's North Island"
   }
 ];
