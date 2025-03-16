@@ -62,7 +62,7 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "10",
-    name: "Bny",
+    name: "Botany",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
     description: "Location in New Zealand"
   },
