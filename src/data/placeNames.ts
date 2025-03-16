@@ -10,7 +10,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "1",
     name: "Takapuna",
-    audioUrl: "https://assets.coderrocketfuel.com/pomodoro-times-up.mp3",
+    audioUrl: "https://github.com/vivo-nz/pronounciation/raw/20040701_energetic-upbeat-pop_by_stocksounds_preview.mp3",
     description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
   },
   {
