@@ -101,7 +101,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Howell Road": { type: 'store' },
   "Kapiti Street": { type: 'store' },
   "Lambton Quay": { type: 'store' },
-  "Levin": { type: 'store' },
+  // Removed duplicate "Levin" entry as it appears in Manawatu section
   "Lower Hutt": { type: 'store' },
   "Masterton": { type: 'store' },
   "Petone": { type: 'store' },
@@ -132,7 +132,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Dunedin": { type: 'city' },
   "Queenstown": { type: 'city' },
   "Oamaru": { type: 'city' },
-  "Alexandra Park": { type: 'store' },
+  // Removed duplicate "Alexandra Park" entry as it appears in Auckland section
   "George Street": { type: 'store' },
   "Remarkables Park": { type: 'store' },
   
@@ -239,6 +239,7 @@ export const placeNameRegions: Record<string, string[]> = {
   "canterbury": [
     "Avonhead", 
     "Cashell Square", 
+    "Christchurch",
     "Fanshawe Street", 
     "Ferrymead", 
     "Grange Warkworth", 
@@ -248,6 +249,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Rangiora", 
     "Rolleston"
   ],
-  "central_south": ["Alexandra Park", "Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
+  "central_south": ["Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };

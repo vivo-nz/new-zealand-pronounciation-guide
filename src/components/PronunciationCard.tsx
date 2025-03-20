@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import AudioPlayer from './AudioPlayer';
 import { PlaceName } from '@/data/placeNames';
-import { Building, Store } from 'lucide-react';
+import { Building, Landmark, Store } from 'lucide-react';
 import { placeTypes } from '@/data/regions';
 
 interface PronunciationCardProps {
@@ -34,7 +34,7 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
     >
       <div className="flex items-center gap-3 flex-1">
         {isCity ? (
-          <Building className="text-blue-600 flex-shrink-0" size={20} />
+          <Landmark className="text-blue-600 flex-shrink-0" size={20} />
         ) : (
           <Store className="text-green-600 flex-shrink-0" size={20} />
         )}
