@@ -571,12 +571,6 @@ export const placeNames: PlaceName[] = [
     description: "City in the Bay of Plenty"
   },
   {
-    id: "95",
-    name: "Taupo",
-    audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
-    description: "Town on the shore of Lake Taupo"
-  },
-  {
     id: "96",
     name: "Tauranga",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
