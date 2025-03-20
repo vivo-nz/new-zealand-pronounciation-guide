@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -83,7 +82,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   
   // Manawatu
   "Palmerston North": { type: 'city' },
-  "Whanganui": { type: 'city' },
+  "Whanganui": { type: 'store' },
   "Broadway": { type: 'store' },
   "Kelvin Grove": { type: 'store' },
   "Levin": { type: 'store' },
