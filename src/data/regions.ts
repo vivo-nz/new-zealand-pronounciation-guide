@@ -1,17 +1,16 @@
-
 export type Region = {
   id: string;
   name: string;
   description?: string;
 }
 
-export type PlaceType = 'city' | 'store';
+export type PlaceType = 'city' | 'store' | 'region';
 
 export type PlaceDetails = {
   type: PlaceType;
 };
 
-// Map which defines the type of each place (city or store)
+// Map which defines the type of each place (city, store, or region)
 export const placeTypes: Record<string, PlaceDetails> = {
   // Northland
   "Whangarei": { type: 'city' },
@@ -48,18 +47,17 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Takapuna Anzac": { type: 'store' },
   "Te Atatu": { type: 'store' },
   "The Boundary": { type: 'store' },
-  "Western Heights": { type: 'store' },
   "Westgate": { type: 'store' },
   
   // Waikato
   "Hamilton": { type: 'city' },
+  "Waikato": { type: 'region' },
   "Cambridge": { type: 'store' },
   "Centre Place": { type: 'store' },
   "Chartwell": { type: 'store' },
   "Fifth Ave": { type: 'store' },
   "Te Awamutu": { type: 'store' },
   "Te Rapa": { type: 'store' },
-  "Waikato": { type: 'store' },
   
   // Bay of Plenty
   "Tauranga": { type: 'city' },
@@ -101,7 +99,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Howell Road": { type: 'store' },
   "Kapiti Street": { type: 'store' },
   "Lambton Quay": { type: 'store' },
-  // Removed duplicate "Levin" entry as it appears in Manawatu section
   "Lower Hutt": { type: 'store' },
   "Masterton": { type: 'store' },
   "Petone": { type: 'store' },
@@ -132,7 +129,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Dunedin": { type: 'city' },
   "Queenstown": { type: 'city' },
   "Oamaru": { type: 'city' },
-  // Removed duplicate "Alexandra Park" entry as it appears in Auckland section
   "George Street": { type: 'store' },
   "Remarkables Park": { type: 'store' },
   

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import AudioPlayer from './AudioPlayer';
 import { PlaceName } from '@/data/placeNames';
-import { Building, Landmark, Store } from 'lucide-react';
+import { Building, Landmark, Map, Store } from 'lucide-react';
 import { placeTypes } from '@/data/regions';
 
 interface PronunciationCardProps {
@@ -19,6 +19,7 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
   // Get the place type (defaulting to store if not specified)
   const placeDetails = placeTypes[placeName.name] || { type: 'store' };
   const isCity = placeDetails.type === 'city';
+  const isRegion = placeDetails.type === 'region';
 
   return (
     <div
@@ -33,7 +34,9 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-3 flex-1">
-        {isCity ? (
+        {isRegion ? (
+          <Map className="text-purple-600 flex-shrink-0" size={20} />
+        ) : isCity ? (
           <Landmark className="text-blue-600 flex-shrink-0" size={20} />
         ) : (
           <Store className="text-green-600 flex-shrink-0" size={20} />
