@@ -51,7 +51,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   
   // Waikato
   "Hamilton": { type: 'city' },
-  "Waikato": { type: 'region' },
+  "Waikato": { type: 'city' },
   "Cambridge": { type: 'store' },
   "Centre Place": { type: 'store' },
   "Chartwell": { type: 'store' },
