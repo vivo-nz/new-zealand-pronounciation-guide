@@ -1,3 +1,4 @@
+
 export interface PlaceName {
   id: string;
   name: string;
@@ -452,7 +453,7 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "75",
-    name: "TGA Crossing",
+    name: "Tauranga Crossing",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
     description: "Shopping center in Tauranga"
   },

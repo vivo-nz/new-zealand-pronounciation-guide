@@ -71,7 +71,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Redwood": { type: 'store' },
   "Taupo City": { type: 'store' },
   "Tauranga Crossing": { type: 'store' },
-  "TGA Crossing": { type: 'store' },
   "Whakatane": { type: 'store' },
   
   // Taranaki
@@ -210,7 +209,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Taupo City", 
     "Tauranga", 
     "Tauranga Crossing",
-    "TGA Crossing", 
     "Whakatane"
   ],
   "taranaki": ["Devon", "Devon Street", "New Plymouth", "Stratford", "Taranaki"],
