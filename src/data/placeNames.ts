@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -11,13 +10,13 @@ export const placeNames: PlaceName[] = [
     id: "1",
     name: "Takapuna",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/takapuna-audio.mp3",
-    description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
+    description: "Suburb in Auckland, New Zealand"
   },
   {
     id: "2",
     name: "Oamaru",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/oamaru-audio.mp3",
-    description: "Coastal town in North Otago, New Zealand, with correct Māori pronunciation"
+    description: "Coastal town in North Otago, New Zealand"
   },
   {
     id: "3",
@@ -423,9 +422,9 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "70",
-    name: "Takapuna Anzac",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/takapuna-anzac-audio.mp3",
-    description: "Area in Takapuna, Auckland"
+    name: "Takapuna",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/takapuna-audio.mp3",
+    description: "Suburb in Auckland, New Zealand"
   },
   {
     id: "71",
