@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -62,7 +61,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   
   // Bay of Plenty
   "Tauranga": { type: 'city' },
-  "Taupo": { type: 'city' },
+  "Taupo": { type: 'store' },
   "Bayfair": { type: 'store' },
   "Bethlehem": { type: 'store' },
   "Cameron Road": { type: 'store' },
