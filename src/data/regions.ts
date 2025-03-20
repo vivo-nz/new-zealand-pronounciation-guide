@@ -47,6 +47,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Takapuna Anzac": { type: 'store' },
   "Te Atatu": { type: 'store' },
   "The Boundary": { type: 'store' },
+  "Western Heights": { type: 'store' },
   "Westgate": { type: 'store' },
   
   // Waikato
@@ -77,7 +78,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Devon": { type: 'store' },
   "Devon Street": { type: 'store' },
   "Stratford": { type: 'store' },
-  "Taranaki": { type: 'store' },
+  "Taranaki": { type: 'city' },
   
   // Manawatu
   "Palmerston North": { type: 'city' },
