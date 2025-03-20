@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import SearchBar from '@/components/SearchBar';
-import PlaceNameList from '@/components/PlaceNameList';
 import { placeNames } from '@/data/placeNames';
+import { regions } from '@/data/regions';
 import { Toaster } from "@/components/ui/toaster";
+import RegionAccordion from '@/components/RegionAccordion';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,8 +46,9 @@ const Index = () => {
           />
         </motion.div>
 
-        <PlaceNameList 
+        <RegionAccordion 
           placeNames={placeNames} 
+          regions={regions}
           searchQuery={searchQuery}
         />
 
