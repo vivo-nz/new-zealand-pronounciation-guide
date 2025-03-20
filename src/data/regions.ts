@@ -98,7 +98,18 @@ export const placeNameRegions: Record<string, string[]> = {
     "Willeston Street"
   ],
   "nelson": ["Buxton Square", "Nelson", "Richmond"],
-  "canterbury": ["Avonhead", "Cashel Street", "Christchurch", "Ferrymead", "Ilam", "Merivale", "Northlands", "Rangiora", "Redwood", "Rolleston"],
+  "canterbury": [
+    "Avonhead", 
+    "Cashell Square", 
+    "Fanshawe Street", 
+    "Ferrymead", 
+    "Grange Warkworth", 
+    "Ilam", 
+    "Merivale", 
+    "Northlands", 
+    "Rangiora", 
+    "Rolleston"
+  ],
   "central_south": ["Alexandra Park", "Dunedin", "George, Dunedin", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk", "Invercargill", "Western Heights", "Windsor"]
 };
