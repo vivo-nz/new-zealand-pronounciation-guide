@@ -65,7 +65,21 @@ export const placeNameRegions: Record<string, string[]> = {
     "Te Rapa", 
     "Waikato"
   ],
-  "bay_of_plenty": ["Bayfair", "Bethlehem", "Maunganui", "Papamoa", "Rotorua", "Taupo", "Taupo City", "Tauranga", "TGA Crossing", "Whakatane"],
+  "bay_of_plenty": [
+    "Bayfair", 
+    "Bethlehem", 
+    "Cameron Road",
+    "Hinemoa",
+    "Maunganui", 
+    "Papamoa", 
+    "Redwood",
+    "Taupo", 
+    "Taupo City", 
+    "Tauranga", 
+    "Tauranga Crossing",
+    "TGA Crossing", 
+    "Whakatane"
+  ],
   "taranaki": ["Devon", "New Plymouth", "Stratford"],
   "manawatu": ["Kelvin Grove", "Levin", "Palmerston North"],
   "hawkes_bay": ["Havelock North", "Napier"],
