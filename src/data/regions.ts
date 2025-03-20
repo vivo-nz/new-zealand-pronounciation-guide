@@ -49,7 +49,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Stoneridge",
     "Sylvia Park", 
     "Takanini", 
-    "Takapuna", 
     "Takapuna Anzac", 
     "Te Atatu", 
     "The Boundary",
