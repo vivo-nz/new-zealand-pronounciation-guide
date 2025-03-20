@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -125,9 +126,9 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Rolleston": { type: 'store' },
   
   // Central South
-  "Dunedin": { type: 'city' },
+  "Dunedin": { type: 'store' },
   "Queenstown": { type: 'city' },
-  "Oamaru": { type: 'city' },
+  "Oamaru": { type: 'store' },
   "George Street": { type: 'store' },
   "Remarkables Park": { type: 'store' },
   
