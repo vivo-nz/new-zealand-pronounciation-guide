@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -52,7 +51,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Westgate": { type: 'store' },
   
   // Waikato
-  "Hamilton": { type: 'city' }, // Updated to match Auckland's icon
+  "Hamilton": { type: 'city' },
   "Waikato": { type: 'city' },
   "Cambridge": { type: 'store' },
   "Centre Place": { type: 'store' },
@@ -90,7 +89,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Manawatu": { type: 'store' },
   
   // Hawkes Bay
-  "Napier": { type: 'city' },
+  "Napier": { type: 'store' },
   "Havelock North": { type: 'store' },
   
   // Wellington
