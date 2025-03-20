@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { PlaceName } from '@/data/placeNames';
-import { Region, placeNameRegions } from '@/data/regions';
+import { Region, placeNameRegions, placeTypes } from '@/data/regions';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { AnimatePresence, motion } from 'framer-motion';
 import PronunciationCard from './PronunciationCard';
@@ -50,6 +50,11 @@ const RegionAccordion = ({ placeNames, regions, searchQuery }: RegionAccordionPr
     return filteredNames.filter(place => regionPlaceIds.includes(place.name));
   };
 
+  // Count only store-type places (green ones)
+  const getStoreCount = (places: PlaceName[]): number => {
+    return places.filter(place => placeTypes[place.name]?.type === 'store').length;
+  };
+
   // Toggle expanded state for a region
   const toggleRegion = (regionId: string) => {
     setExpandedRegions(prev => 
@@ -81,6 +86,9 @@ const RegionAccordion = ({ placeNames, regions, searchQuery }: RegionAccordionPr
               // Skip empty regions when searching
               if (searchQuery && regionPlaces.length === 0) return null;
               
+              // Get count of stores (green places)
+              const storeCount = getStoreCount(regionPlaces);
+              
               return (
                 <AccordionItem 
                   key={region.id} 
@@ -93,7 +101,7 @@ const RegionAccordion = ({ placeNames, regions, searchQuery }: RegionAccordionPr
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="font-medium">{region.name}</span>
-                      <span className="text-sm text-muted-foreground">{regionPlaces.length} places</span>
+                      <span className="text-sm text-muted-foreground">{storeCount} salons</span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pb-1 space-y-2">
