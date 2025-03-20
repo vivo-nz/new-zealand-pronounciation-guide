@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -80,7 +81,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Whakatane"
   ],
   "taranaki": ["Devon", "Devon Street", "New Plymouth", "Stratford", "Taranaki"],
-  "manawatu": ["Kelvin Grove", "Levin", "Palmerston North"],
+  "manawatu": ["Broadway", "Kelvin Grove", "Levin", "Manawatu", "Palmerston North", "Whanganui"],
   "hawkes_bay": ["Havelock North", "Napier"],
   "wellington": ["Lambton Quay", "Lower Hutt", "Petone", "Porirua", "Tory", "Upper Hutt", "Wellington", "Willeston"],
   "nelson": ["Buxton Square", "Nelson", "Richmond"],
