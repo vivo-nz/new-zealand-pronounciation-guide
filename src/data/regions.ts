@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -110,6 +111,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Rangiora", 
     "Rolleston"
   ],
-  "central_south": ["Alexandra Park", "Dunedin", "George, Dunedin", "Oamaru", "Queenstown", "Remarkables Park"],
+  "central_south": ["Alexandra Park", "Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk", "Invercargill", "Western Heights", "Windsor"]
 };
