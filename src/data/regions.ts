@@ -112,5 +112,5 @@ export const placeNameRegions: Record<string, string[]> = {
     "Rolleston"
   ],
   "central_south": ["Alexandra Park", "Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
-  "invercargill": ["Esk", "Invercargill", "Western Heights", "Windsor"]
+  "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };
