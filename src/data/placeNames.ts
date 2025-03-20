@@ -1,3 +1,4 @@
+
 export interface PlaceName {
   id: string;
   name: string;
@@ -9,7 +10,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "1",
     name: "Takapuna",
-    audioUrl: "https://github.com/vivo-nz/new-zealand-pronounciation-guide/blob/main/takapuna.1.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/repo/main/takapuna.1.mp3",
     description: "Suburb in Auckland, New Zealand, with correct Māori pronunciation"
   },
   {
