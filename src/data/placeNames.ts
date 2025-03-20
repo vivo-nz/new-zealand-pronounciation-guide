@@ -134,9 +134,9 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "22",
-    name: "Esk",
+    name: "Esk Street",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
-    description: "Area in Invercargill"
+    description: "Main street in Invercargill"
   },
   {
     id: "23",
