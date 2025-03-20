@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -429,9 +428,9 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "71",
-    name: "Taupo City",
+    name: "Taupo",
     audioUrl: "https://assets.coderrocketfuel.com/welcome-to-pomodoro.mp3",
-    description: "City in the central North Island"
+    description: "Town on the shore of Lake Taupo"
   },
   {
     id: "72",

@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -69,7 +70,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Maunganui": { type: 'store' },
   "Papamoa": { type: 'store' },
   "Redwood": { type: 'store' },
-  "Taupo City": { type: 'store' },
   "Tauranga Crossing": { type: 'store' },
   "Whakatane": { type: 'store' },
   
@@ -206,7 +206,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Papamoa", 
     "Redwood",
     "Taupo", 
-    "Taupo City", 
     "Tauranga", 
     "Tauranga Crossing",
     "Whakatane"
