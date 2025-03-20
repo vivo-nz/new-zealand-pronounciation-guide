@@ -5,6 +5,143 @@ export type Region = {
   description?: string;
 }
 
+export type PlaceType = 'city' | 'store';
+
+export type PlaceDetails = {
+  type: PlaceType;
+};
+
+// Map which defines the type of each place (city or store)
+export const placeTypes: Record<string, PlaceDetails> = {
+  // Northland
+  "Whangarei": { type: 'city' },
+  "Kamo": { type: 'store' },
+  "Rathbone": { type: 'store' },
+  "Strand Mall": { type: 'store' },
+  "Northland": { type: 'store' },
+  
+  // Auckland (cities and stores)
+  "Auckland": { type: 'city' },
+  "Albany": { type: 'store' },
+  "Albany Oteha Valley Road": { type: 'store' },
+  "Alexandra Park": { type: 'store' },
+  "Birkenhead": { type: 'store' },
+  "Botany": { type: 'store' },
+  "Browns Bay": { type: 'store' },
+  "Chancery": { type: 'store' },
+  "Howick": { type: 'store' },
+  "Kingsland": { type: 'store' },
+  "Manukau": { type: 'store' },
+  "Milford": { type: 'store' },
+  "Mt Eden": { type: 'store' },
+  "Northridge Plaza": { type: 'store' },
+  "Orewa": { type: 'store' },
+  "Ponsonby on Franklin": { type: 'store' },
+  "Pukekohe": { type: 'store' },
+  "Remuera": { type: 'store' },
+  "Silverdale": { type: 'store' },
+  "Smales Farm": { type: 'store' },
+  "St Heliers": { type: 'store' },
+  "Stoneridge": { type: 'store' },
+  "Sylvia Park": { type: 'store' },
+  "Takanini": { type: 'store' },
+  "Takapuna Anzac": { type: 'store' },
+  "Te Atatu": { type: 'store' },
+  "The Boundary": { type: 'store' },
+  "Western Heights": { type: 'store' },
+  "Westgate": { type: 'store' },
+  
+  // Waikato
+  "Hamilton": { type: 'city' },
+  "Cambridge": { type: 'store' },
+  "Centre Place": { type: 'store' },
+  "Chartwell": { type: 'store' },
+  "Fifth Ave": { type: 'store' },
+  "Te Awamutu": { type: 'store' },
+  "Te Rapa": { type: 'store' },
+  "Waikato": { type: 'store' },
+  
+  // Bay of Plenty
+  "Tauranga": { type: 'city' },
+  "Taupo": { type: 'city' },
+  "Bayfair": { type: 'store' },
+  "Bethlehem": { type: 'store' },
+  "Cameron Road": { type: 'store' },
+  "Hinemoa": { type: 'store' },
+  "Maunganui": { type: 'store' },
+  "Papamoa": { type: 'store' },
+  "Redwood": { type: 'store' },
+  "Taupo City": { type: 'store' },
+  "Tauranga Crossing": { type: 'store' },
+  "TGA Crossing": { type: 'store' },
+  "Whakatane": { type: 'store' },
+  
+  // Taranaki
+  "New Plymouth": { type: 'city' },
+  "Devon": { type: 'store' },
+  "Devon Street": { type: 'store' },
+  "Stratford": { type: 'store' },
+  "Taranaki": { type: 'store' },
+  
+  // Manawatu
+  "Palmerston North": { type: 'city' },
+  "Whanganui": { type: 'city' },
+  "Broadway": { type: 'store' },
+  "Kelvin Grove": { type: 'store' },
+  "Levin": { type: 'store' },
+  "Manawatu": { type: 'store' },
+  
+  // Hawkes Bay
+  "Napier": { type: 'city' },
+  "Havelock North": { type: 'store' },
+  
+  // Wellington
+  "Wellington": { type: 'city' },
+  "Carterton": { type: 'store' },
+  "Howell Road": { type: 'store' },
+  "Kapiti Street": { type: 'store' },
+  "Lambton Quay": { type: 'store' },
+  "Levin": { type: 'store' },
+  "Lower Hutt": { type: 'store' },
+  "Masterton": { type: 'store' },
+  "Petone": { type: 'store' },
+  "Porirua": { type: 'store' },
+  "Tory Street": { type: 'store' },
+  "Upper Hutt": { type: 'store' },
+  "Willeston Street": { type: 'store' },
+  
+  // Nelson
+  "Nelson": { type: 'city' },
+  "Buxton Square": { type: 'store' },
+  "Richmond": { type: 'store' },
+  
+  // Canterbury
+  "Christchurch": { type: 'city' },
+  "Avonhead": { type: 'store' },
+  "Cashell Square": { type: 'store' },
+  "Fanshawe Street": { type: 'store' },
+  "Ferrymead": { type: 'store' },
+  "Grange Warkworth": { type: 'store' },
+  "Ilam": { type: 'store' },
+  "Merivale": { type: 'store' },
+  "Northlands": { type: 'store' },
+  "Rangiora": { type: 'store' },
+  "Rolleston": { type: 'store' },
+  
+  // Central South
+  "Dunedin": { type: 'city' },
+  "Queenstown": { type: 'city' },
+  "Oamaru": { type: 'city' },
+  "Alexandra Park": { type: 'store' },
+  "George Street": { type: 'store' },
+  "Remarkables Park": { type: 'store' },
+  
+  // Invercargill
+  "Invercargill": { type: 'city' },
+  "Esk Street": { type: 'store' },
+  "Windsor": { type: 'store' }
+};
+
 export const regions: Region[] = [
   { id: "northland", name: "NORTHLAND", description: "The northernmost region of New Zealand" },
   { id: "auckland", name: "AUCKLAND", description: "New Zealand's largest city" },
