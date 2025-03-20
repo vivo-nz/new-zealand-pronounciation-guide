@@ -1,8 +1,9 @@
 
-import { useState, useEffect } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Play, Pause, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playAudio, stopAudio } from '@/lib/audioUtils';
+import { toast } from "@/hooks/use-toast";
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -14,23 +15,54 @@ interface AudioPlayerProps {
 const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    // Clean up audio on unmount
-    return () => stopAudio();
-  }, []);
+    // Reset error state when component receives a new audioUrl
+    setHasError(false);
+    
+    return () => {
+      isMounted.current = false;
+      stopAudio();
+    };
+  }, [audioUrl]);
 
   const handlePlayClick = () => {
     if (isPlaying) {
       stopAudio();
       setIsPlaying(false);
-    } else {
-      playAudio(
-        audioUrl,
-        () => setIsPlaying(true),
-        () => setIsPlaying(false)
-      );
+      return;
     }
+
+    // Reset error state on new play attempt
+    setHasError(false);
+    
+    playAudio(
+      audioUrl,
+      () => {
+        if (isMounted.current) {
+          setIsPlaying(true);
+        }
+      },
+      () => {
+        if (isMounted.current) {
+          setIsPlaying(false);
+        }
+      },
+      (error) => {
+        console.error("Audio player error:", error);
+        if (isMounted.current) {
+          setHasError(true);
+          setIsPlaying(false);
+          toast({
+            title: "Audio Error",
+            description: `Could not play "${placeName}" pronunciation. The audio file might be unavailable or in an unsupported format.`,
+            variant: "destructive",
+          });
+        }
+      }
+    );
   };
 
   const sizeClasses = {
@@ -54,7 +86,9 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
           sizeClasses[size],
           isPlaying 
             ? "bg-primary/10 border-primary/20 text-primary" 
-            : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
+            : hasError
+              ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
+              : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
           isHovered && !isPlaying ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
@@ -63,6 +97,8 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       >
         {isPlaying ? (
           <Pause size={iconSizes[size]} className="animation-pulse-subtle" />
+        ) : hasError ? (
+          <AlertCircle size={iconSizes[size]} />
         ) : (
           <Play size={iconSizes[size]} className="ml-0.5" />
         )}

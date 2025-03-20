@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -54,18 +53,13 @@ const getGoogleDriveDirectUrl = (url: string): string => {
 };
 
 // Function to handle SoundCloud URLs
-const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void): void => {
+const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void, onError?: (error: any) => void): void => {
   // Try to match the URL pattern to extract the track ID or username/track-name
   const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
   
   if (!trackPath) {
     console.error('Could not extract SoundCloud track information from URL:', url);
-    toast({
-      title: "Audio Error",
-      description: "Could not process SoundCloud link. Please try a direct audio file.",
-      variant: "destructive",
-    });
-    if (onEnd) onEnd();
+    if (onError) onError(new Error('Could not process SoundCloud link'));
     return;
   }
 
@@ -92,6 +86,12 @@ const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => voi
 // Function to ensure GitHub raw URLs are correctly formatted
 const getGitHubRawUrl = (url: string): string => {
   console.log("Processing GitHub URL:", url);
+  
+  // If already a raw URL, return it
+  if (url.includes('raw.githubusercontent.com')) {
+    console.log("URL is already a raw.githubusercontent.com URL");
+    return url;
+  }
   
   // Always convert GitHub URLs to raw.githubusercontent.com format for direct access
   if (url.includes('github.com')) {
@@ -123,7 +123,10 @@ const getGitHubRawUrl = (url: string): string => {
         const branch = match[3];
         const path = match[4];
         
-        const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+        // Decode URL encoded characters (like spaces) in the path
+        const decodedPath = decodeURIComponent(path);
+        
+        const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${decodedPath}`;
         console.log("Converted GitHub /blob/ URL to raw.githubusercontent.com:", newUrl);
         return newUrl;
       }
@@ -139,28 +142,42 @@ const getGitHubRawUrl = (url: string): string => {
       const branch = match[3] || 'main';
       const path = match[4] || '';
       
-      const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+      // Decode URL encoded characters in the path
+      const decodedPath = decodeURIComponent(path);
+      
+      const newUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${decodedPath}`;
       console.log("Converted GitHub URL to raw.githubusercontent.com:", newUrl);
       return newUrl;
     }
-  }
-  
-  // If it's already a raw.githubusercontent.com URL, return as is
-  if (url.includes('raw.githubusercontent.com')) {
-    console.log("URL is already a raw.githubusercontent.com URL");
-    return url;
   }
   
   console.log("No conversion needed or pattern not recognized, returning original URL");
   return url;
 };
 
-export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => void): void => {
+// Fix audio URLs containing parentheses or spaces
+const fixSpecialCharactersInUrl = (url: string): string => {
+  // First decode the URL to handle any already encoded parts
+  let decodedUrl = decodeURIComponent(url);
+  
+  // Then encode parentheses and spaces properly
+  return decodedUrl
+    .replace(/\(/g, '%28')
+    .replace(/\)/g, '%29')
+    .replace(/ /g, '%20');
+};
+
+export const playAudio = (
+  audioUrl: string, 
+  onPlay?: () => void, 
+  onEnd?: () => void,
+  onError?: (error: any) => void
+): void => {
   console.log("Original audio URL:", audioUrl);
 
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
-    handleSoundCloudUrl(audioUrl, onPlay, onEnd);
+    handleSoundCloudUrl(audioUrl, onPlay, onEnd, onError);
     return;
   }
 
@@ -170,6 +187,10 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     processedUrl = getGitHubRawUrl(audioUrl);
     console.log("Processed GitHub URL to:", processedUrl);
   }
+
+  // Fix special characters in the URL
+  processedUrl = fixSpecialCharactersInUrl(processedUrl);
+  console.log("URL after fixing special characters:", processedUrl);
 
   // If it's a Google Drive URL, convert to direct URL
   if (isGoogleDriveUrl(processedUrl)) {
@@ -213,32 +234,17 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
     console.log('Audio error code:', error?.code);
     console.log('Audio error message:', error?.message);
     
-    let errorMessage = "Could not play pronunciation audio.";
-    
-    // Provide more specific error messages based on the error code
-    if (error) {
-      switch(error.code) {
-        case MediaError.MEDIA_ERR_ABORTED:
-          errorMessage = "Audio playback was aborted.";
-          break;
-        case MediaError.MEDIA_ERR_NETWORK:
-          errorMessage = "Network error occurred while loading audio. Check your internet connection.";
-          break;
-        case MediaError.MEDIA_ERR_DECODE:
-          errorMessage = "Audio format not supported or corrupted. Try a different audio format like .mp3 or .ogg.";
-          break;
-        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          errorMessage = "Audio format not supported by your browser. The audio file might be corrupted or in an unsupported format.";
-          break;
-      }
+    // Invoke onError callback if provided
+    if (onError) {
+      onError(error || new Error('Unknown audio error'));
+    } else {
+      // Otherwise show toast notification with shadcn/ui
+      toast({
+        title: "Audio Error",
+        description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
+        variant: "destructive",
+      });
     }
-    
-    // Show toast notification with shadcn/ui
-    toast({
-      title: "Audio Error",
-      description: errorMessage + " Please try a different audio file or format.",
-      variant: "destructive",
-    });
     
     if (onEnd) onEnd();
     audioInstance = null;
@@ -246,16 +252,23 @@ export const playAudio = (audioUrl: string, onPlay?: () => void, onEnd?: () => v
 
   // Play the audio with a slight delay to ensure smooth animation
   setTimeout(() => {
-    audioInstance?.play().catch(err => {
+    if (!audioInstance) return;
+    
+    audioInstance.play().catch(err => {
       console.error('Failed to play audio:', err);
       console.log('Failed audio URL details:', processedUrl);
       
-      // Show toast notification with shadcn/ui
-      toast({
-        title: "Audio Error",
-        description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
-        variant: "destructive",
-      });
+      // Invoke onError callback if provided
+      if (onError) {
+        onError(err);
+      } else {
+        // Otherwise show toast notification with shadcn/ui
+        toast({
+          title: "Audio Error",
+          description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
+          variant: "destructive",
+        });
+      }
       
       if (onEnd) onEnd();
       audioInstance = null;
