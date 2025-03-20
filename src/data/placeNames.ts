@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -16,7 +15,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "2",
     name: "Oamaru",
-    audioUrl: "https://github.com/vivo-nz/new-zealand-pronounciation-guide/blob/main/oamaru%20(3).mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/oamaru-audio.mp3",
     description: "Coastal town in North Otago, New Zealand, with correct Māori pronunciation"
   },
   {
@@ -602,4 +601,3 @@ export const placeNames: PlaceName[] = [
     description: "Region on the west coast of New Zealand's North Island"
   }
 ];
-
