@@ -37,8 +37,11 @@ function getPlaceDescription(placeName: string): string {
   } else if (placeDetail.type === 'region') {
     return `Region in New Zealand`;
   } else {
-    // Special case for Broadway
+    // Special cases for specific salons
     if (placeName === "Broadway") {
+      return "Salon in Palmerston North";
+    }
+    if (placeName === "Kelvin Grove") {
       return "Salon in Palmerston North";
     }
     
