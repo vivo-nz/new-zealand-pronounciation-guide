@@ -1,3 +1,4 @@
+
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -111,10 +112,6 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Manukau") {
       return "Salon in South Auckland";
     }
-    // Special case for Devon salon
-    if (placeName === "Devon") {
-      return "Salon in New Plymouth Central City";
-    }
     // Special case for Devon Street salon
     if (placeName === "Devon Street") {
       return "Salon in New Plymouth Central City";
@@ -128,6 +125,12 @@ function getPlaceDescription(placeName: string): string {
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
       if (places.includes(placeName)) {
         const region = regions.find(r => r.id === regionId);
+        
+        // Special case for Nelson region
+        if (regionId === "nelson") {
+          return "Salon in Nelson";
+        }
+        
         return region ? `Salon in ${region.name}` : 'Salon in New Zealand';
       }
     }
