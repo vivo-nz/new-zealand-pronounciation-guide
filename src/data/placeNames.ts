@@ -131,6 +131,11 @@ function getPlaceDescription(placeName: string): string {
           return "Salon in Nelson";
         }
         
+        // Special case for Wellington region
+        if (regionId === "wellington") {
+          return "Salon in Wellington";
+        }
+        
         return region ? `Salon in ${region.name}` : 'Salon in New Zealand';
       }
     }
