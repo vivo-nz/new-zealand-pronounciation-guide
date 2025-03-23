@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -18,7 +17,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Kamo": { type: 'store' },
   "Rathbone": { type: 'store' },
   "Strand Mall": { type: 'store' },
-  "Northland": { type: 'store' },
+  "Northland": { type: 'city' },  // Changed from 'store' to 'city'
   
   // Auckland (cities and stores)
   "Auckland": { type: 'city' },
@@ -244,4 +243,3 @@ export const placeNameRegions: Record<string, string[]> = {
   "central_south": ["Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };
-
