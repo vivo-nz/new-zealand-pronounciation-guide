@@ -97,6 +97,16 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Howick") {
       return "Salon in East Auckland";
     }
+    // Adding special cases for South Auckland salons
+    if (placeName === "Takanini") {
+      return "Salon in South Auckland";
+    }
+    if (placeName === "Pukekohe") {
+      return "Salon in South Auckland";
+    }
+    if (placeName === "Manukau") {
+      return "Salon in South Auckland";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
