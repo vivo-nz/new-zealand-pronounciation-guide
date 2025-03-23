@@ -1,4 +1,3 @@
-
 export interface PlaceName {
   id: string;
   name: string;
@@ -21,9 +20,9 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "3",
-    name: "Albany",
+    name: "Albany Oteha Valley Road",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/albany-audio.mp3",
-    description: "Suburb on Auckland's North Shore"
+    description: "Area in Auckland's North Shore"
   },
   {
     id: "4",
