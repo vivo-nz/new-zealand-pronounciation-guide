@@ -1,3 +1,4 @@
+
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -47,6 +48,9 @@ function getPlaceDescription(placeName: string): string {
     }
     if (placeName === "Whanganui") {
       return "Salon in Whanganui";
+    }
+    if (placeName === "Albany Oteha Valley Road") {
+      return "Salon in Auckland, North Shore";
     }
     
     // For other stores, find which region they belong to
