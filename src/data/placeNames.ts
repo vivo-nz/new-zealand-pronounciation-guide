@@ -52,6 +52,28 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Albany Oteha Valley Road") {
       return "Salon in Auckland, North Shore";
     }
+    // Adding special cases for North Shore salons
+    if (placeName === "Birkenhead") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Browns Bay") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Milford") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Albany Northridge Plaza") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Silverdale") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Smales Farm") {
+      return "Salon in Auckland, North Shore";
+    }
+    if (placeName === "Takapuna") {
+      return "Salon in Auckland, North Shore";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
