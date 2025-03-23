@@ -44,6 +44,9 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Kelvin Grove") {
       return "Salon in Palmerston North";
     }
+    if (placeName === "Levin") {
+      return "Salon in Levin";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
