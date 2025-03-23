@@ -115,6 +115,10 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Devon Street") {
       return "Salon in New Plymouth Central City";
     }
+    // Special case for Stratford salon
+    if (placeName === "Stratford") {
+      return "Salon in small township in New Plymouth";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
