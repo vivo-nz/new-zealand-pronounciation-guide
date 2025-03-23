@@ -1,4 +1,3 @@
-
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -60,4 +59,3 @@ function getPlaceDescription(placeName: string): string {
     return 'Salon in New Zealand';
   }
 }
-
