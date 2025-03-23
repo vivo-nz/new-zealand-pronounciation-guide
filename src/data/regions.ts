@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -85,7 +86,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Broadway": { type: 'store' },
   "Kelvin Grove": { type: 'store' },
   "Levin": { type: 'store' },
-  "Manawatu": { type: 'store' },
+  "Manawatu": { type: 'region' },  // Changed from 'store' to 'region'
   
   // Hawkes Bay
   "Napier": { type: 'store' },

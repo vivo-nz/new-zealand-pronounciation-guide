@@ -35,7 +35,7 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
     >
       <div className="flex items-center gap-3 flex-1">
         {isRegion ? (
-          <Map className="text-purple-600 flex-shrink-0" size={20} />
+          <Map className="text-blue-600 flex-shrink-0" size={20} />
         ) : isCity ? (
           <Landmark className="text-blue-600 flex-shrink-0" size={20} />
         ) : (
