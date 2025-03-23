@@ -107,6 +107,10 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Manukau") {
       return "Salon in South Auckland";
     }
+    // Special case for Devon salon
+    if (placeName === "Devon") {
+      return "Salon in New Plymouth Central City";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
