@@ -47,6 +47,9 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Levin") {
       return "Salon in Levin";
     }
+    if (placeName === "Whanganui") {
+      return "Salon in Whanganui";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
