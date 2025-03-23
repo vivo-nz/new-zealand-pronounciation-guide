@@ -136,6 +136,11 @@ function getPlaceDescription(placeName: string): string {
           return "Salon in Wellington";
         }
         
+        // Special case for Canterbury region
+        if (regionId === "canterbury") {
+          return "Salon in Christchurch";
+        }
+        
         return region ? `Salon in ${region.name}` : 'Salon in New Zealand';
       }
     }
