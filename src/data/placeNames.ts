@@ -17,16 +17,15 @@ export const placeNames: PlaceName[] = [
   },
   // Add all other places from placeTypes object, excluding Mt Maunganui which is already defined
   ...Object.keys(placeTypes)
-    .filter(name => name !== "Mt Maunganui") // Skip Mt Maunganui as it's already defined
+    .filter(name => name !== "Mt Maunganui")
     .map((name, index) => ({
-      id: (index + 100).toString(), // Generate unique IDs starting from 100
+      id: (index + 100).toString(),
       name,
-      audioUrl: "", // Empty for now
+      audioUrl: "",
       description: getPlaceDescription(name)
     }))
 ];
 
-// Helper function to generate descriptions based on place type
 function getPlaceDescription(placeName: string): string {
   const placeDetail = placeTypes[placeName];
   
@@ -55,9 +54,10 @@ function getPlaceDescription(placeName: string): string {
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
       if (places.includes(placeName)) {
         const region = regions.find(r => r.id === regionId);
-        return region ? `Salon in ${region.name.toLowerCase()}` : 'Salon in New Zealand';
+        return region ? `Salon in ${region.name}` : 'Salon in New Zealand';
       }
     }
     return 'Salon in New Zealand';
   }
 }
+
