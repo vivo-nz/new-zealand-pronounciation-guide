@@ -66,7 +66,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Bethlehem": { type: 'store' },
   "Cameron Road": { type: 'store' },
   "Hinemoa": { type: 'store' },
-  "Maunganui": { type: 'store' },
+  "Mt Maunganui": { type: 'store' },
   "Papamoa": { type: 'store' },
   "Redwood": { type: 'store' },
   "Tauranga Crossing": { type: 'store' },
@@ -200,7 +200,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Bethlehem", 
     "Cameron Road",
     "Hinemoa",
-    "Maunganui", 
+    "Mt Maunganui", 
     "Papamoa", 
     "Redwood",
     "Taupo", 
@@ -243,3 +243,4 @@ export const placeNameRegions: Record<string, string[]> = {
   "central_south": ["Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };
+
