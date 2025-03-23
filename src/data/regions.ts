@@ -138,18 +138,18 @@ export const placeTypes: Record<string, PlaceDetails> = {
 };
 
 export const regions: Region[] = [
-  { id: "northland", name: "NORTHLAND", description: "The northernmost region of New Zealand" },
-  { id: "auckland", name: "AUCKLAND", description: "New Zealand's largest city" },
-  { id: "waikato", name: "HAMILTON / WAIKATO", description: "Region in the upper North Island" },
-  { id: "bay_of_plenty", name: "BAY OF PLENTY", description: "Coastal region in the North Island" },
-  { id: "taranaki", name: "NEW PLYMOUTH / TARANAKI", description: "Region on the west coast of North Island" },
-  { id: "manawatu", name: "MANAWATU", description: "Lower North Island region" },
-  { id: "hawkes_bay", name: "HAWKES BAY", description: "Eastern North Island region" },
-  { id: "wellington", name: "WELLINGTON REGION", description: "Capital city and surrounding region" },
-  { id: "nelson", name: "NELSON", description: "Top of the South Island" },
-  { id: "canterbury", name: "CHRISTCHURCH / CANTERBURY", description: "Largest South Island region" },
-  { id: "central_south", name: "CENTRAL SOUTH ISLAND", description: "Central regions of the South Island" },
-  { id: "invercargill", name: "INVERCARGILL", description: "Southernmost city and region" }
+  { id: "northland", name: "Northland", description: "The northernmost region of New Zealand" },
+  { id: "auckland", name: "Auckland", description: "New Zealand's largest city" },
+  { id: "waikato", name: "Hamilton / Waikato", description: "Region in the upper North Island" },
+  { id: "bay_of_plenty", name: "Bay of Plenty", description: "Coastal region in the North Island" },
+  { id: "taranaki", name: "New Plymouth / Taranaki", description: "Region on the west coast of North Island" },
+  { id: "manawatu", name: "Manawatu", description: "Lower North Island region" },
+  { id: "hawkes_bay", name: "Hawkes Bay", description: "Eastern North Island region" },
+  { id: "wellington", name: "Wellington Region", description: "Capital city and surrounding region" },
+  { id: "nelson", name: "Nelson", description: "Top of the South Island" },
+  { id: "canterbury", name: "Christchurch / Canterbury", description: "Largest South Island region" },
+  { id: "central_south", name: "Central South Island", description: "Central regions of the South Island" },
+  { id: "invercargill", name: "Invercargill", description: "Southernmost city and region" }
 ];
 
 // Map of which places belong to which regions
