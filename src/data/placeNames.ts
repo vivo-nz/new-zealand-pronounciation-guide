@@ -37,7 +37,12 @@ function getPlaceDescription(placeName: string): string {
   } else if (placeDetail.type === 'region') {
     return `Region in New Zealand`;
   } else {
-    // For stores, find which region they belong to
+    // Special case for Broadway
+    if (placeName === "Broadway") {
+      return "Salon in Palmerston North";
+    }
+    
+    // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
       if (places.includes(placeName)) {
         const region = regions.find(r => r.id === regionId);
