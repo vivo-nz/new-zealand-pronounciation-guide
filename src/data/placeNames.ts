@@ -74,6 +74,19 @@ function getPlaceDescription(placeName: string): string {
     if (placeName === "Takapuna") {
       return "Salon in Auckland, North Shore";
     }
+    // Adding special cases for West Auckland salons
+    if (placeName === "Westgate") {
+      return "Salon in West Auckland";
+    }
+    if (placeName === "Western Heights") {
+      return "Salon in West Auckland";
+    }
+    if (placeName === "The Boundary") {
+      return "Salon in West Auckland";
+    }
+    if (placeName === "Te Atatu") {
+      return "Salon in West Auckland";
+    }
     
     // For other stores, find which region they belong to
     for (const [regionId, places] of Object.entries(placeNameRegions)) {
