@@ -1,3 +1,4 @@
+
 export interface PlaceName {
   id: string;
   name: string;
@@ -315,7 +316,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "52",
     name: "Ponsonby on Franklin",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/ponsonby-on-franklin-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/ponsonby-audio.m4a",
     description: "Area in Auckland"
   },
   {
