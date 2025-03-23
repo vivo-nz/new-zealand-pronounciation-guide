@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -162,6 +163,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Botany", 
     "Browns Bay", 
     "Chancery",
+    "Grange Warkworth", // Moved from Canterbury to Auckland
     "Howick", 
     "Kingsland", 
     "Manukau", 
@@ -232,7 +234,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Christchurch",
     "Fanshawe Street", 
     "Ferrymead", 
-    "Grange Warkworth", 
+    // Removed "Grange Warkworth" from here
     "Ilam", 
     "Merivale", 
     "Northlands", 

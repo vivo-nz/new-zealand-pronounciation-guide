@@ -1,4 +1,3 @@
-
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -36,6 +35,11 @@ function getPlaceDescription(placeName: string): string {
   } else if (placeDetail.type === 'region') {
     return `Region in New Zealand`;
   } else {
+    // Special case for Grange Warkworth in Auckland
+    if (placeName === "Grange Warkworth") {
+      return "Salon in Auckland, North Shore";
+    }
+    
     // Special case modifications for Hawkes Bay region
     if (placeName === "Napier" || placeName === "Havelock North") {
       return "Salon in Hawkes Bay";
