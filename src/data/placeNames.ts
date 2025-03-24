@@ -135,8 +135,8 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "23",
-    name: "Fanshawe",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/fanshawe-audio.mp3",
+    name: "Fanshawe Street",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/fanshawe-street-audio.mp3",
     description: "Street in Auckland"
   },
   {
