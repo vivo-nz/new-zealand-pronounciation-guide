@@ -400,7 +400,7 @@ export const placeNames: PlaceName[] = [
     id: "66",
     name: "Strand Mall",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/strand-mall-audio.mp3",
-    description: "Shopping center in New Zealand"
+    description: "Shopping Centre in Whangarei"
   },
   {
     id: "67",
