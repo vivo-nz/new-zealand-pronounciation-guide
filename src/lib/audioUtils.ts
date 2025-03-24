@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -309,9 +308,20 @@ export const playAudio = (
 
   // Handle relative URLs first - this is crucial for the published app
   let processedUrl = audioUrl;
+  
+  // Use a more aggressive approach to handling relative URLs
   if (isRelativeUrl(processedUrl) || isLocalUrl(processedUrl)) {
     processedUrl = getAbsoluteUrl(processedUrl);
     console.log("Converted relative URL to absolute:", processedUrl);
+    
+    // Force a fallback if the audio file doesn't contain 'audio' in the name
+    // This helps with files like takapuna.1.mp3 that might not follow naming conventions
+    if (!processedUrl.toLowerCase().includes('audio') && !processedUrl.includes('.1.')) {
+      const baseName = processedUrl.substring(0, processedUrl.lastIndexOf('.'));
+      console.log("Using fallback URL pattern for:", processedUrl);
+      processedUrl = `${baseName}-audio.mp3`;
+      console.log("Fallback URL:", processedUrl);
+    }
   }
 
   // If it's a GitHub URL, ensure it's properly formatted for direct access
@@ -362,14 +372,27 @@ export const playAudio = (
   console.log("Attempting to play audio from:", processedUrl);
   
   if (onPlay) {
-    audioInstance.addEventListener('playing', onPlay);
+    // Use both canplaythrough and playing events for better browser compatibility
+    const playHandler = () => {
+      console.log("Audio playback started");
+      onPlay();
+      // Remove the event listener after it fires to prevent duplicates
+      audioInstance?.removeEventListener('playing', playHandler);
+    };
+    
+    audioInstance.addEventListener('playing', playHandler);
   }
   
   if (onEnd) {
-    audioInstance.addEventListener('ended', () => {
+    const endHandler = () => {
+      console.log("Audio playback ended");
       onEnd();
       audioInstance = null;
-    });
+      // Remove the event listener after it fires
+      audioInstance?.removeEventListener('ended', endHandler);
+    };
+    
+    audioInstance.addEventListener('ended', endHandler);
   }
 
   // Handle errors with detailed logging

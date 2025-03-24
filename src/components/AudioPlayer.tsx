@@ -18,18 +18,27 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [hasError, setHasError] = useState(false);
   const isMounted = useRef(true);
 
+  // Debug log to check if component is being rendered with correct props
+  console.log(`AudioPlayer rendered for ${placeName} with URL: ${audioUrl}`);
+
   useEffect(() => {
     // Reset error state when component receives a new audioUrl
     setHasError(false);
     
     return () => {
       isMounted.current = false;
-      stopAudio();
+      // Make sure to stop audio when component unmounts
+      if (isPlaying) {
+        stopAudio();
+      }
     };
-  }, [audioUrl, placeName]);
+  }, [audioUrl, placeName, isPlaying]);
 
   const handlePlayClick = () => {
+    console.log(`Play button clicked for ${placeName}`);
+    
     if (isPlaying) {
+      console.log(`Stopping audio for ${placeName}`);
       stopAudio();
       setIsPlaying(false);
       return;
@@ -60,7 +69,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
           setIsPlaying(false);
           toast({
             title: "Audio Error",
-            description: `Could not play audio for "${placeName}".`,
+            description: `Could not play audio for "${placeName}". Please try again.`,
             variant: "destructive",
           });
         }
@@ -104,6 +113,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        disabled={hasError}
       >
         {renderIcon()}
       </button>
