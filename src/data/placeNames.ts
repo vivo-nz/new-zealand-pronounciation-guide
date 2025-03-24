@@ -1,3 +1,4 @@
+
 import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
@@ -111,8 +112,8 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "19",
-    name: "Chancery",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/chancery-audio.mp3",
+    name: "Chancery Square",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/chancery-square-audio.mp3",
     description: "Shopping area in central Auckland"
   },
   {
@@ -590,3 +591,4 @@ export const placeNames: PlaceName[] = [
     description: "Region on the west coast of New Zealand's North Island"
   }
 ];
+
