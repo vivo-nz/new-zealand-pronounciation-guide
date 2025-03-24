@@ -20,9 +20,6 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
   const placeDetails = placeTypes[placeName.name] || { type: 'store' };
   const isCity = placeDetails.type === 'city';
   const isRegion = placeDetails.type === 'region';
-  
-  // Special case: Make Manawatu use the Landmark icon like Palmerston North
-  const isManawatu = placeName.name === "Manawatu";
 
   return (
     <div
@@ -37,9 +34,9 @@ const PronunciationCard = ({ placeName, className }: PronunciationCardProps) => 
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-3 flex-1">
-        {isRegion && !isManawatu ? (
-          <Map className="text-blue-600 flex-shrink-0" size={20} />
-        ) : isCity || isManawatu ? (
+        {isRegion ? (
+          <Map className="text-purple-600 flex-shrink-0" size={20} />
+        ) : isCity ? (
           <Landmark className="text-blue-600 flex-shrink-0" size={20} />
         ) : (
           <Store className="text-green-600 flex-shrink-0" size={20} />

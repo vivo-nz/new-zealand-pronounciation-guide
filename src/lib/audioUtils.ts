@@ -1,8 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
-const failedAudioFiles = new Set<string>();
-const MAX_FORMAT_RETRIES = 1;
 
 // Helper to check if a URL is from SoundCloud
 const isSoundCloudUrl = (url: string): boolean => {
@@ -17,11 +15,6 @@ const isGitHubUrl = (url: string): boolean => {
 // Helper to check if a URL is local (starting with '/')
 const isLocalUrl = (url: string): boolean => {
   return url.startsWith('/');
-};
-
-// Helper to check if a URL is relative (not starting with 'http' or '/')
-const isRelativeUrl = (url: string): boolean => {
-  return !url.startsWith('http') && !url.startsWith('/');
 };
 
 // Helper to check if a URL is from Google Drive
@@ -57,6 +50,37 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   
   // Convert to direct download URL
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
+};
+
+// Function to handle SoundCloud URLs
+const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void, onError?: (error: any) => void): void => {
+  // Try to match the URL pattern to extract the track ID or username/track-name
+  const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
+  
+  if (!trackPath) {
+    console.error('Could not extract SoundCloud track information from URL:', url);
+    if (onError) onError(new Error('Could not process SoundCloud link'));
+    return;
+  }
+
+  // We need to use window.open as SoundCloud's embedded iframe has security restrictions
+  // that prevent autoplay in many browsers without user interaction
+  window.open(url, '_blank');
+  
+  // Since we're opening in a new tab, we need to notify the user
+  toast({
+    title: "SoundCloud Audio",
+    description: "SoundCloud audio opened in a new tab. Please play it there for the best experience.",
+    variant: "default",
+  });
+  
+  // Simulate playback for UI purposes
+  if (onPlay) onPlay();
+  
+  // Simulate end after a reasonable time for UI to return to normal
+  setTimeout(() => {
+    if (onEnd) onEnd();
+  }, 5000);
 };
 
 // Function to ensure GitHub raw URLs are correctly formatted
@@ -143,184 +167,6 @@ const fixSpecialCharactersInUrl = (url: string): string => {
     .replace(/ /g, '%20');
 };
 
-// Try alternative audio formats if the first one fails
-const tryAlternativeFormats = (
-  baseUrl: string, 
-  onPlay?: () => void, 
-  onEnd?: () => void,
-  onError?: (error: any) => void
-): void => {
-  // Extract the base filename without extension
-  const parts = baseUrl.split('.');
-  const extension = parts.pop() || '';
-  const baseName = parts.join('.');
-  
-  // Define alternative formats to try - updated order based on broader browser support
-  // mp3 has the widest browser support, followed by wav
-  const formats = ['mp3', 'wav', 'ogg', 'm4a'];
-  
-  // Remove the current format from the list if it exists
-  const currentFormatIndex = formats.indexOf(extension.toLowerCase());
-  if (currentFormatIndex !== -1) {
-    formats.splice(currentFormatIndex, 1);
-  }
-  
-  // Put the current format at the beginning if it's a known audio format
-  if (['mp3', 'wav', 'ogg', 'm4a'].includes(extension.toLowerCase())) {
-    formats.unshift(extension.toLowerCase());
-  }
-  
-  console.log(`Will try formats in this order:`, formats);
-  
-  // Generate a unique key for this base URL to track failed attempts
-  const baseUrlKey = `${baseName}_attempts`;
-
-  // If we've already tried and failed with this file, don't try again
-  if (failedAudioFiles.has(baseUrlKey)) {
-    console.log(`Already tried all formats for ${baseName}, not retrying`);
-    if (onError) onError(new Error('All audio formats previously failed to load'));
-    return;
-  }
-  
-  // Function to try each format recursively
-  const tryFormat = (index: number) => {
-    if (index >= formats.length) {
-      console.error('All audio formats failed to load');
-      // Add to failed files set to prevent future attempts
-      failedAudioFiles.add(baseUrlKey);
-      if (onError) onError(new Error('All audio formats failed to load'));
-      return;
-    }
-    
-    const url = `${baseName}.${formats[index]}`;
-    console.log(`Trying format ${index + 1}/${formats.length}: ${url}`);
-    
-    // Skip this format if we've already tried it and it failed
-    const formatKey = `${url}_format`;
-    if (failedAudioFiles.has(formatKey)) {
-      console.log(`Format ${formats[index]} already failed before, skipping`);
-      tryFormat(index + 1);
-      return;
-    }
-    
-    // Add cache buster
-    const urlWithCacheBuster = url + (url.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
-    
-    const audio = new Audio();
-    audio.crossOrigin = "anonymous";
-    
-    // Set a timeout for loading
-    let loadTimeout = setTimeout(() => {
-      console.log(`Timeout for format ${formats[index]}`);
-      // Mark this format as failed
-      failedAudioFiles.add(formatKey);
-      audio.src = ''; // Clear source to stop loading
-      tryFormat(index + 1);
-    }, 3000);
-    
-    // Set up event listeners
-    audio.addEventListener('canplaythrough', () => {
-      clearTimeout(loadTimeout);
-      console.log(`Format ${formats[index]} loaded successfully`);
-      
-      if (onPlay) onPlay();
-      
-      audio.addEventListener('ended', () => {
-        if (onEnd) onEnd();
-        audio.remove();
-      });
-      
-      audio.play().catch(err => {
-        console.error(`Error playing ${formats[index]} format:`, err);
-        // Mark this format as failed
-        failedAudioFiles.add(formatKey);
-        tryFormat(index + 1);
-      });
-    });
-    
-    audio.addEventListener('error', (e) => {
-      clearTimeout(loadTimeout);
-      console.warn(`Format ${formats[index]} failed to load:`, e);
-      // Mark this format as failed
-      failedAudioFiles.add(formatKey);
-      tryFormat(index + 1);
-    });
-    
-    // Clean up timeout if we do get a valid response
-    audio.addEventListener('loadeddata', () => {
-      clearTimeout(loadTimeout);
-    });
-    
-    // Set source and load
-    audio.src = urlWithCacheBuster;
-    audio.load();
-  };
-  
-  // Start trying formats
-  tryFormat(0);
-};
-
-// Check if the audio format is supported by the browser
-const isAudioFormatSupported = (format: string): boolean => {
-  const audio = document.createElement('audio');
-  
-  // Check basic MIME type support
-  const mimeTypes = {
-    'm4a': 'audio/mp4; codecs="mp4a.40.2"',
-    'mp3': 'audio/mpeg',
-    'wav': 'audio/wav',
-    'ogg': 'audio/ogg; codecs="vorbis"'
-  };
-  
-  const type = mimeTypes[format as keyof typeof mimeTypes];
-  if (!type) return false;
-  
-  return audio.canPlayType(type) !== '';
-};
-
-// Explicitly build absolute URLs from relative ones
-const getAbsoluteUrl = (url: string): string => {
-  // If it's already an absolute URL, return it
-  if (url.startsWith('http') || url.startsWith('//')) {
-    return url;
-  }
-  
-  // Remove any leading dots or slashes for consistency
-  let cleanUrl = url;
-  while (cleanUrl.startsWith('./') || cleanUrl.startsWith('../')) {
-    cleanUrl = cleanUrl.replace(/^\.\//, '').replace(/^\.\.\//, '');
-  }
-  
-  // If it's a root-relative URL (starts with /)
-  if (cleanUrl.startsWith('/')) {
-    // Remove the leading slash to prevent double slashes
-    cleanUrl = cleanUrl.substring(1);
-  }
-  
-  // For published apps, we need to check if we're running in a subdirectory
-  const baseUrl = window.location.origin;
-  const pathPrefix = window.location.pathname.split('/').slice(0, -1).join('/');
-  
-  // Construct the full URL
-  let fullUrl = `${baseUrl}`;
-  
-  // Add the path prefix if we're in a subdirectory
-  if (pathPrefix && pathPrefix !== '/') {
-    fullUrl += pathPrefix;
-  }
-  
-  // Ensure there's a slash between the base and the file
-  if (!fullUrl.endsWith('/')) {
-    fullUrl += '/';
-  }
-  
-  // Add the file path
-  fullUrl += cleanUrl;
-  
-  console.log(`Resolved relative URL "${url}" to absolute URL "${fullUrl}"`);
-  return fullUrl;
-};
-
 export const playAudio = (
   audioUrl: string, 
   onPlay?: () => void, 
@@ -329,45 +175,16 @@ export const playAudio = (
 ): void => {
   console.log("Original audio URL:", audioUrl);
 
-  // Skip if we've already tried and failed with this exact URL
-  if (failedAudioFiles.has(audioUrl)) {
-    console.log(`Already tried ${audioUrl} and failed, not retrying`);
-    if (onError) onError(new Error('Audio file previously failed to load'));
-    return;
-  }
-
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
     handleSoundCloudUrl(audioUrl, onPlay, onEnd, onError);
     return;
   }
 
-  // Handle relative URLs first - this is crucial for the published app
-  let processedUrl = audioUrl;
-  
-  // Use a more aggressive approach to handling relative URLs
-  if (isRelativeUrl(processedUrl) || isLocalUrl(processedUrl)) {
-    processedUrl = getAbsoluteUrl(processedUrl);
-    console.log("Converted relative URL to absolute:", processedUrl);
-    
-    // Force a fallback if the audio file doesn't contain 'audio' in the name
-    // But only if it's not already a special file like .1. format
-    if (!processedUrl.toLowerCase().includes('audio') && !processedUrl.includes('.1.')) {
-      const baseName = processedUrl.substring(0, processedUrl.lastIndexOf('.'));
-      console.log("Using fallback URL pattern for:", processedUrl);
-      const fallbackUrl = `${baseName}-audio.mp3`;
-      
-      // Only use the fallback if the original isn't in the failed set
-      if (!failedAudioFiles.has(processedUrl)) {
-        processedUrl = fallbackUrl;
-        console.log("Fallback URL:", processedUrl);
-      }
-    }
-  }
-
   // If it's a GitHub URL, ensure it's properly formatted for direct access
-  if (isGitHubUrl(processedUrl)) {
-    processedUrl = getGitHubRawUrl(processedUrl);
+  let processedUrl = audioUrl;
+  if (isGitHubUrl(audioUrl)) {
+    processedUrl = getGitHubRawUrl(audioUrl);
     console.log("Processed GitHub URL to:", processedUrl);
   }
 
@@ -381,20 +198,6 @@ export const playAudio = (
     console.log("Converted Google Drive URL to:", processedUrl);
   }
   
-  // Detect the audio format from the URL
-  const fileExtension = processedUrl.split('.').pop()?.toLowerCase() || '';
-  
-  // Check browser support for this audio format
-  const isFormatSupported = isAudioFormatSupported(fileExtension);
-  console.log(`Audio format ${fileExtension} supported by browser: ${isFormatSupported}`);
-  
-  // If format is not supported, try alternative formats right away
-  if (!isFormatSupported && ['m4a', 'mp3', 'wav', 'ogg'].includes(fileExtension)) {
-    console.log(`Browser doesn't support ${fileExtension}, trying alternative formats...`);
-    tryAlternativeFormats(processedUrl, onPlay, onEnd, onError);
-    return;
-  }
-  
   // Add a cache buster to avoid caching issues
   processedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
   console.log("Final audio URL with cache buster:", processedUrl);
@@ -406,34 +209,21 @@ export const playAudio = (
   }
 
   // Create and play new audio
-  audioInstance = new Audio();
+  audioInstance = new Audio(processedUrl);
   audioInstance.crossOrigin = "anonymous"; // Handle CORS issues
   
   // Log the audio URL being used
   console.log("Attempting to play audio from:", processedUrl);
   
   if (onPlay) {
-    // Use both canplaythrough and playing events for better browser compatibility
-    const playHandler = () => {
-      console.log("Audio playback started");
-      onPlay();
-      // Remove the event listener after it fires to prevent duplicates
-      audioInstance?.removeEventListener('playing', playHandler);
-    };
-    
-    audioInstance.addEventListener('playing', playHandler);
+    audioInstance.addEventListener('playing', onPlay);
   }
   
   if (onEnd) {
-    const endHandler = () => {
-      console.log("Audio playback ended");
+    audioInstance.addEventListener('ended', () => {
       onEnd();
       audioInstance = null;
-      // Remove the event listener after it fires
-      audioInstance?.removeEventListener('ended', endHandler);
-    };
-    
-    audioInstance.addEventListener('ended', endHandler);
+    });
   }
 
   // Handle errors with detailed logging
@@ -444,46 +234,21 @@ export const playAudio = (
     console.log('Audio error code:', error?.code);
     console.log('Audio error message:', error?.message);
     
-    // Mark this URL as failed
-    failedAudioFiles.add(audioUrl);
+    // Invoke onError callback if provided
+    if (onError) {
+      onError(error || new Error('Unknown audio error'));
+    } else {
+      // Otherwise show toast notification with shadcn/ui
+      toast({
+        title: "Audio Error",
+        description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
+        variant: "destructive",
+      });
+    }
     
-    // Try alternative formats if the main format fails
-    console.log('Trying alternative audio formats...');
-    tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
-    
-    // Clear the current audio instance
+    if (onEnd) onEnd();
     audioInstance = null;
   });
-
-  // Set a timeout to handle case where neither error nor canplay events fire
-  const loadTimeout = setTimeout(() => {
-    if (!audioInstance) return;
-    
-    if (audioInstance.readyState < 3) { // HAVE_FUTURE_DATA
-      console.error('Audio load timeout:', processedUrl);
-      // Mark this URL as failed
-      failedAudioFiles.add(audioUrl);
-      
-      // Try alternative formats after timeout
-      tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
-      
-      // Clear the current audio instance
-      audioInstance = null;
-    }
-  }, 5000);
-
-  // Clear the timeout if the audio loads or errors
-  audioInstance.addEventListener('canplaythrough', () => {
-    clearTimeout(loadTimeout);
-  });
-  
-  audioInstance.addEventListener('error', () => {
-    clearTimeout(loadTimeout);
-  });
-
-  // Set source and load the audio
-  audioInstance.src = processedUrl;
-  audioInstance.load();
 
   // Play the audio with a slight delay to ensure smooth animation
   setTimeout(() => {
@@ -493,47 +258,22 @@ export const playAudio = (
       console.error('Failed to play audio:', err);
       console.log('Failed audio URL details:', processedUrl);
       
-      // Mark this URL as failed
-      failedAudioFiles.add(audioUrl);
+      // Invoke onError callback if provided
+      if (onError) {
+        onError(err);
+      } else {
+        // Otherwise show toast notification with shadcn/ui
+        toast({
+          title: "Audio Error",
+          description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
+          variant: "destructive",
+        });
+      }
       
-      // Try alternative formats if the main format fails
-      console.log('Trying alternative audio formats after play failure...');
-      tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
-      
+      if (onEnd) onEnd();
       audioInstance = null;
     });
   }, 50);
-};
-
-// Helper function to handle SoundCloud URLs
-const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void, onError?: (error: any) => void): void => {
-  // Try to match the URL pattern to extract the track ID or username/track-name
-  const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
-  
-  if (!trackPath) {
-    console.error('Could not extract SoundCloud track information from URL:', url);
-    if (onError) onError(new Error('Could not process SoundCloud link'));
-    return;
-  }
-
-  // We need to use window.open as SoundCloud's embedded iframe has security restrictions
-  // that prevent autoplay in many browsers without user interaction
-  window.open(url, '_blank');
-  
-  // Since we're opening in a new tab, we need to notify the user
-  toast({
-    title: "SoundCloud Audio",
-    description: "SoundCloud audio opened in a new tab. Please play it there for the best experience.",
-    variant: "default",
-  });
-  
-  // Simulate playback for UI purposes
-  if (onPlay) onPlay();
-  
-  // Simulate end after a reasonable time for UI to return to normal
-  setTimeout(() => {
-    if (onEnd) onEnd();
-  }, 5000);
 };
 
 export const stopAudio = (): void => {
@@ -542,4 +282,3 @@ export const stopAudio = (): void => {
     audioInstance = null;
   }
 };
-

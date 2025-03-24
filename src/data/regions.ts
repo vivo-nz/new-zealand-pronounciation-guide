@@ -1,3 +1,4 @@
+
 export type Region = {
   id: string;
   name: string;
@@ -17,10 +18,11 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Kamo": { type: 'store' },
   "Rathbone": { type: 'store' },
   "Strand Mall": { type: 'store' },
-  "Northland": { type: 'city' },  // Changed from 'store' to 'city'
+  "Northland": { type: 'store' },
   
   // Auckland (cities and stores)
   "Auckland": { type: 'city' },
+  "Albany": { type: 'store' },
   "Albany Oteha Valley Road": { type: 'store' },
   "Alexandra Park": { type: 'store' },
   "Birkenhead": { type: 'store' },
@@ -32,7 +34,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Manukau": { type: 'store' },
   "Milford": { type: 'store' },
   "Mt Eden": { type: 'store' },
-  "Albany Northridge Plaza": { type: 'store' },
+  "Northridge Plaza": { type: 'store' },
   "Orewa": { type: 'store' },
   "Ponsonby on Franklin": { type: 'store' },
   "Pukekohe": { type: 'store' },
@@ -43,7 +45,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Stoneridge": { type: 'store' },
   "Sylvia Park": { type: 'store' },
   "Takanini": { type: 'store' },
-  "Takapuna": { type: 'store' },
+  "Takapuna Anzac": { type: 'store' },
   "Te Atatu": { type: 'store' },
   "The Boundary": { type: 'store' },
   "Western Heights": { type: 'store' },
@@ -65,8 +67,8 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Bayfair": { type: 'store' },
   "Bethlehem": { type: 'store' },
   "Cameron Road": { type: 'store' },
-  "Hinemoa Street": { type: 'store' },  // Changed from "Hinemoa" to "Hinemoa Street"
-  "Mt Maunganui": { type: 'store' },
+  "Hinemoa": { type: 'store' },
+  "Maunganui": { type: 'store' },
   "Papamoa": { type: 'store' },
   "Redwood": { type: 'store' },
   "Tauranga Crossing": { type: 'store' },
@@ -74,17 +76,18 @@ export const placeTypes: Record<string, PlaceDetails> = {
   
   // Taranaki
   "New Plymouth": { type: 'city' },
+  "Devon": { type: 'store' },
   "Devon Street": { type: 'store' },
   "Stratford": { type: 'store' },
   "Taranaki": { type: 'city' },
   
   // Manawatu
   "Palmerston North": { type: 'city' },
-  "Whanganui": { type: 'store' },
+  "Whanganui": { type: 'city' },
   "Broadway": { type: 'store' },
   "Kelvin Grove": { type: 'store' },
   "Levin": { type: 'store' },
-  "Manawatu": { type: 'region' },  // Changed from 'store' to 'region'
+  "Manawatu": { type: 'store' },
   
   // Hawkes Bay
   "Napier": { type: 'store' },
@@ -155,6 +158,7 @@ export const regions: Region[] = [
 export const placeNameRegions: Record<string, string[]> = {
   "northland": ["Kamo", "Whangarei", "Rathbone", "Strand Mall", "Northland"],
   "auckland": [
+    "Albany", 
     "Albany Oteha Valley Road",
     "Alexandra Park", 
     "Auckland",
@@ -162,13 +166,12 @@ export const placeNameRegions: Record<string, string[]> = {
     "Botany", 
     "Browns Bay", 
     "Chancery",
-    "Grange Warkworth", // Moved from Canterbury to Auckland
     "Howick", 
     "Kingsland", 
     "Manukau", 
     "Milford", 
     "Mt Eden", 
-    "Albany Northridge Plaza",
+    "Northridge Plaza",
     "Orewa", 
     "Ponsonby on Franklin", 
     "Pukekohe", 
@@ -179,7 +182,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Stoneridge",
     "Sylvia Park", 
     "Takanini", 
-    "Takapuna", 
+    "Takapuna Anzac", 
     "Te Atatu", 
     "The Boundary",
     "Western Heights",
@@ -199,8 +202,8 @@ export const placeNameRegions: Record<string, string[]> = {
     "Bayfair", 
     "Bethlehem", 
     "Cameron Road",
-    "Hinemoa Street",  // Changed from "Hinemoa" to "Hinemoa Street"
-    "Mt Maunganui", 
+    "Hinemoa",
+    "Maunganui", 
     "Papamoa", 
     "Redwood",
     "Taupo", 
@@ -208,7 +211,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Tauranga Crossing",
     "Whakatane"
   ],
-  "taranaki": ["Devon Street", "New Plymouth", "Stratford", "Taranaki"],
+  "taranaki": ["Devon", "Devon Street", "New Plymouth", "Stratford", "Taranaki"],
   "manawatu": ["Broadway", "Kelvin Grove", "Levin", "Manawatu", "Palmerston North", "Whanganui"],
   "hawkes_bay": ["Havelock North", "Napier"],
   "wellington": [
@@ -233,7 +236,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Christchurch",
     "Fanshawe Street", 
     "Ferrymead", 
-    // Removed "Grange Warkworth" from here
+    "Grange Warkworth", 
     "Ilam", 
     "Merivale", 
     "Northlands", 

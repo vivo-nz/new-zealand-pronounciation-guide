@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playAudio, stopAudio } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
@@ -16,46 +16,20 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [errorDisplayed, setErrorDisplayed] = useState(false); // Track if error is already displayed
   const isMounted = useRef(true);
-  const errorToastRef = useRef<{ dismiss: () => void } | null>(null);
-
-  // Debug log to check if component is being rendered with correct props
-  console.log(`AudioPlayer rendered for ${placeName} with URL: ${audioUrl}`);
 
   useEffect(() => {
-    // Reset error states when component receives a new audioUrl
+    // Reset error state when component receives a new audioUrl
     setHasError(false);
-    setErrorDisplayed(false);
-    
-    // Clear any existing error toast when audio URL changes
-    if (errorToastRef.current) {
-      errorToastRef.current.dismiss();
-      errorToastRef.current = null;
-    }
     
     return () => {
       isMounted.current = false;
-      // Make sure to stop audio when component unmounts
-      if (isPlaying) {
-        stopAudio();
-      }
-      
-      // Dismiss any error toasts on unmount
-      if (errorToastRef.current) {
-        errorToastRef.current.dismiss();
-      }
+      stopAudio();
     };
-  }, [audioUrl, placeName, isPlaying]);
+  }, [audioUrl]);
 
   const handlePlayClick = () => {
-    // Don't allow clicks if we're in an error state
-    if (hasError) return;
-    
-    console.log(`Play button clicked for ${placeName}`);
-    
     if (isPlaying) {
-      console.log(`Stopping audio for ${placeName}`);
       stopAudio();
       setIsPlaying(false);
       return;
@@ -63,54 +37,32 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
 
     // Reset error state on new play attempt
     setHasError(false);
-    setErrorDisplayed(false);
     
-    // Clear any existing error toast when trying to play again
-    if (errorToastRef.current) {
-      errorToastRef.current.dismiss();
-      errorToastRef.current = null;
-    }
-    
-    console.log(`Attempting to play audio for ${placeName}`);
     playAudio(
       audioUrl,
       () => {
-        console.log(`Audio started playing for ${placeName}`);
         if (isMounted.current) {
           setIsPlaying(true);
         }
       },
       () => {
-        console.log(`Audio finished playing for ${placeName}`);
         if (isMounted.current) {
           setIsPlaying(false);
         }
       },
       (error) => {
-        console.error(`Audio error for ${placeName}:`, error);
-        if (isMounted.current && !errorDisplayed) {
+        console.error("Audio player error:", error);
+        if (isMounted.current) {
           setHasError(true);
           setIsPlaying(false);
-          setErrorDisplayed(true); // Mark that we've displayed an error
-
-          // Only show the toast if we haven't already
-          errorToastRef.current = toast({
+          toast({
             title: "Audio Error",
-            description: `Could not play audio for "${placeName}". Please try again later.`,
+            description: `Could not play "${placeName}" pronunciation. The audio file might be unavailable or in an unsupported format.`,
             variant: "destructive",
           });
         }
       }
     );
-  };
-
-  // Get the appropriate icon based on the current state
-  const renderIcon = () => {
-    if (isPlaying) {
-      return <Pause size={iconSizes[size]} className="animation-pulse-subtle" />;
-    } else {
-      return <Play size={iconSizes[size]} className="ml-0.5" />;
-    }
   };
 
   const sizeClasses = {
@@ -134,16 +86,22 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
           sizeClasses[size],
           isPlaying 
             ? "bg-primary/10 border-primary/20 text-primary" 
-            : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
-          hasError ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-          isHovered && !isPlaying && !hasError ? "scale-110" : "scale-100"
+            : hasError
+              ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
+              : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
+          isHovered && !isPlaying ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        disabled={hasError}
       >
-        {renderIcon()}
+        {isPlaying ? (
+          <Pause size={iconSizes[size]} className="animation-pulse-subtle" />
+        ) : hasError ? (
+          <AlertCircle size={iconSizes[size]} />
+        ) : (
+          <Play size={iconSizes[size]} className="ml-0.5" />
+        )}
       </button>
 
       {isPlaying && (
