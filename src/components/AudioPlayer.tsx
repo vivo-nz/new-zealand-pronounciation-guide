@@ -31,7 +31,9 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
     
     // Then check if the file actually exists (only do this once per URL)
     if (isValidUrl && !audioCheckedRef.current) {
+      console.log(`Checking if audio exists for ${placeName}:`, audioUrl);
       checkAudioFileExists(audioUrl, (exists) => {
+        console.log(`Audio exists for ${placeName}:`, exists);
         if (isMounted.current) {
           setAudioAvailable(exists);
           audioCheckedRef.current = true;
@@ -43,7 +45,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       isMounted.current = false;
       stopAudio();
     };
-  }, [audioUrl]);
+  }, [audioUrl, placeName]);
 
   const handlePlayClick = () => {
     // If audio is not available, show a toast and return
@@ -65,19 +67,23 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
     // Reset error state on new play attempt
     setHasError(false);
     
+    console.log(`Attempting to play audio for ${placeName}`);
     playAudio(
       audioUrl,
       () => {
+        console.log(`Audio started playing for ${placeName}`);
         if (isMounted.current) {
           setIsPlaying(true);
         }
       },
       () => {
+        console.log(`Audio finished playing for ${placeName}`);
         if (isMounted.current) {
           setIsPlaying(false);
         }
       },
       (error) => {
+        console.error(`Audio error for ${placeName}:`, error);
         if (isMounted.current) {
           setHasError(true);
           setAudioAvailable(false);
@@ -132,6 +138,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        disabled={!audioAvailable}
       >
         {renderIcon()}
       </button>

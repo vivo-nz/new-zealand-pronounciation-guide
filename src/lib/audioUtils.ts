@@ -18,6 +18,11 @@ const isLocalUrl = (url: string): boolean => {
   return url.startsWith('/');
 };
 
+// Helper to check if a URL is relative (not starting with 'http' or '/')
+const isRelativeUrl = (url: string): boolean => {
+  return !url.startsWith('http') && !url.startsWith('/');
+};
+
 // Helper to check if a URL is from Google Drive
 const isGoogleDriveUrl = (url: string): boolean => {
   return url.includes('drive.google.com');
@@ -53,7 +58,7 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
-// NEW: Function to check if an audio file actually exists
+// Function to check if an audio file actually exists
 export const checkAudioFileExists = (url: string, callback: (exists: boolean) => void): void => {
   // If URL is not valid, immediately return false
   if (!url || url.trim() === '') {
@@ -73,6 +78,12 @@ export const checkAudioFileExists = (url: string, callback: (exists: boolean) =>
     processedUrl = getGitHubRawUrl(url);
   }
   
+  // Handle relative URLs for published apps
+  if (isRelativeUrl(processedUrl)) {
+    processedUrl = `${window.location.origin}/${processedUrl}`;
+    console.log("Converting relative URL for check:", processedUrl);
+  }
+  
   // Fix special characters in the URL
   processedUrl = fixSpecialCharactersInUrl(processedUrl);
   
@@ -89,21 +100,31 @@ export const checkAudioFileExists = (url: string, callback: (exists: boolean) =>
     .then(response => {
       callback(response.ok);
     })
-    .catch(() => {
+    .catch((error) => {
+      console.log("Fetch HEAD failed:", error);
       // For local URLs, we'll try a different approach by creating an Audio element
-      if (isLocalUrl(url) || url.indexOf('http') !== 0) {
+      if (isLocalUrl(url) || isRelativeUrl(url)) {
         const audio = new Audio();
+        console.log("Trying Audio element check with:", processedUrl);
+        
         audio.onloadedmetadata = () => {
+          console.log("Audio metadata loaded successfully");
           callback(true);
         };
-        audio.onerror = () => {
+        
+        audio.onerror = (e) => {
+          console.log("Audio load error:", e);
           callback(false);
         };
+        
         audio.src = processedUrl;
         
         // Set a timeout in case neither event fires
         setTimeout(() => {
-          callback(false);
+          console.log("Audio check timeout");
+          if (audio.readyState < 3) { // HAVE_FUTURE_DATA
+            callback(false);
+          }
         }, 3000);
       } else {
         callback(false);
@@ -366,7 +387,7 @@ export const playAudio = (
   }
   
   // Handle relative URLs by prepending the base URL for published apps
-  if (!processedUrl.startsWith('http') && !processedUrl.startsWith('/')) {
+  if (isRelativeUrl(processedUrl)) {
     const baseUrl = window.location.origin;
     processedUrl = `${baseUrl}/${processedUrl}`;
     console.log("Converted relative URL to absolute:", processedUrl);
