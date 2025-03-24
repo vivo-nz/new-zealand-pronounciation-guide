@@ -171,7 +171,7 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "29",
-    name: "Hinemoa - Rotorua",
+    name: "Hinemoa Street - Rotorua",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/hinemoa-st-audio.mp3",
     description: "A street in Rotorua"
   },
