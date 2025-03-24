@@ -1,9 +1,4 @@
-export interface PlaceName {
-  id: string;
-  name: string;
-  audioUrl: string;
-  description?: string;
-}
+import { PlaceName } from './placeNames';
 
 export const placeNames: PlaceName[] = [
   {
@@ -344,9 +339,9 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "57",
-    name: "Redwood",
+    name: "Redwood - Rotorua",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/redwood-audio.mp3",
-    description: "Suburb of Christchurch"
+    description: "A shopping Centre in Rotorua"
   },
   {
     id: "58",

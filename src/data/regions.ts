@@ -69,7 +69,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Hinemoa - Rotorua": { type: 'store' },
   "Mt Maunganui": { type: 'store' },
   "Papamoa": { type: 'store' },
-  "Redwood": { type: 'store' },
+  "Redwood - Rotorua": { type: 'store' },
   "Tauranga Crossing": { type: 'store' },
   "Whakatane": { type: 'store' },
   
@@ -202,7 +202,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Hinemoa - Rotorua",
     "Mt Maunganui", 
     "Papamoa", 
-    "Redwood",
+    "Redwood - Rotorua",
     "Taupo", 
     "Tauranga", 
     "Tauranga Crossing",
