@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playAudio, stopAudio } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
@@ -83,6 +83,8 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const renderIcon = () => {
     if (isPlaying) {
       return <Pause size={iconSizes[size]} className="animation-pulse-subtle" />;
+    } else if (!audioAvailable) {
+      return <VolumeX size={iconSizes[size]} className="text-muted-foreground" />;
     } else {
       return <Play size={iconSizes[size]} className="ml-0.5" />;
     }
@@ -107,10 +109,12 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         className={cn(
           "glass-morphism rounded-full flex items-center justify-center transition-all duration-300",
           sizeClasses[size],
-          isPlaying 
-            ? "bg-primary/10 border-primary/20 text-primary" 
-            : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
-          isHovered && !isPlaying ? "scale-110" : "scale-100"
+          !audioAvailable
+            ? "bg-muted/30 border-muted-foreground/20 text-muted-foreground"
+            : isPlaying 
+              ? "bg-primary/10 border-primary/20 text-primary" 
+              : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
+          isHovered && !isPlaying && audioAvailable ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}
