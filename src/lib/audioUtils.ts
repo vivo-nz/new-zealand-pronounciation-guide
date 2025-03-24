@@ -58,111 +58,6 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
-// Function to check if an audio file actually exists
-export const checkAudioFileExists = (url: string, callback: (exists: boolean) => void): void => {
-  // If URL is not valid, immediately return false
-  if (!url || url.trim() === '') {
-    callback(false);
-    return;
-  }
-  
-  // For SoundCloud URLs, we'll assume they exist
-  if (isSoundCloudUrl(url)) {
-    callback(true);
-    return;
-  }
-  
-  // For GitHub URLs, we need to ensure they're in raw format
-  let processedUrl = url;
-  if (isGitHubUrl(url)) {
-    processedUrl = getGitHubRawUrl(url);
-  }
-  
-  // Handle relative URLs for published apps
-  if (isRelativeUrl(processedUrl)) {
-    processedUrl = `${window.location.origin}/${processedUrl}`;
-    console.log("Converting relative URL for check:", processedUrl);
-  }
-  
-  // Fix special characters in the URL
-  processedUrl = fixSpecialCharactersInUrl(processedUrl);
-  
-  // For Google Drive URLs, convert to direct URL
-  if (isGoogleDriveUrl(processedUrl)) {
-    processedUrl = getGoogleDriveDirectUrl(processedUrl);
-  }
-  
-  // Add a cache buster to avoid caching issues
-  processedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
-  
-  // Try to fetch the HEAD of the URL to check if it exists
-  fetch(processedUrl, { method: 'HEAD' })
-    .then(response => {
-      callback(response.ok);
-    })
-    .catch((error) => {
-      console.log("Fetch HEAD failed:", error);
-      // For local URLs, we'll try a different approach by creating an Audio element
-      if (isLocalUrl(url) || isRelativeUrl(url)) {
-        const audio = new Audio();
-        console.log("Trying Audio element check with:", processedUrl);
-        
-        audio.onloadedmetadata = () => {
-          console.log("Audio metadata loaded successfully");
-          callback(true);
-        };
-        
-        audio.onerror = (e) => {
-          console.log("Audio load error:", e);
-          callback(false);
-        };
-        
-        audio.src = processedUrl;
-        
-        // Set a timeout in case neither event fires
-        setTimeout(() => {
-          console.log("Audio check timeout");
-          if (audio.readyState < 3) { // HAVE_FUTURE_DATA
-            callback(false);
-          }
-        }, 3000);
-      } else {
-        callback(false);
-      }
-    });
-};
-
-// Function to handle SoundCloud URLs
-const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void, onError?: (error: any) => void): void => {
-  // Try to match the URL pattern to extract the track ID or username/track-name
-  const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
-  
-  if (!trackPath) {
-    console.error('Could not extract SoundCloud track information from URL:', url);
-    if (onError) onError(new Error('Could not process SoundCloud link'));
-    return;
-  }
-
-  // We need to use window.open as SoundCloud's embedded iframe has security restrictions
-  // that prevent autoplay in many browsers without user interaction
-  window.open(url, '_blank');
-  
-  // Since we're opening in a new tab, we need to notify the user
-  toast({
-    title: "SoundCloud Audio",
-    description: "SoundCloud audio opened in a new tab. Please play it there for the best experience.",
-    variant: "default",
-  });
-  
-  // Simulate playback for UI purposes
-  if (onPlay) onPlay();
-  
-  // Simulate end after a reasonable time for UI to return to normal
-  setTimeout(() => {
-    if (onEnd) onEnd();
-  }, 5000);
-};
-
 // Function to ensure GitHub raw URLs are correctly formatted
 const getGitHubRawUrl = (url: string): string => {
   console.log("Processing GitHub URL:", url);
@@ -355,6 +250,22 @@ const isAudioFormatSupported = (format: string): boolean => {
   return audio.canPlayType(type) !== '';
 };
 
+// Explicitly build absolute URLs from relative ones
+const getAbsoluteUrl = (url: string): string => {
+  // If it's already an absolute URL, return it
+  if (url.startsWith('http') || url.startsWith('//')) {
+    return url;
+  }
+  
+  // If it's a root-relative URL (starts with /)
+  if (url.startsWith('/')) {
+    return `${window.location.origin}${url}`;
+  }
+  
+  // If it's a truly relative URL (doesn't start with /)
+  return `${window.location.origin}/${url}`;
+};
+
 export const playAudio = (
   audioUrl: string, 
   onPlay?: () => void, 
@@ -369,10 +280,16 @@ export const playAudio = (
     return;
   }
 
-  // If it's a GitHub URL, ensure it's properly formatted for direct access
+  // Handle relative URLs first - this is crucial for the published app
   let processedUrl = audioUrl;
-  if (isGitHubUrl(audioUrl)) {
-    processedUrl = getGitHubRawUrl(audioUrl);
+  if (isRelativeUrl(processedUrl) || isLocalUrl(processedUrl)) {
+    processedUrl = getAbsoluteUrl(processedUrl);
+    console.log("Converted relative URL to absolute:", processedUrl);
+  }
+
+  // If it's a GitHub URL, ensure it's properly formatted for direct access
+  if (isGitHubUrl(processedUrl)) {
+    processedUrl = getGitHubRawUrl(processedUrl);
     console.log("Processed GitHub URL to:", processedUrl);
   }
 
@@ -384,13 +301,6 @@ export const playAudio = (
   if (isGoogleDriveUrl(processedUrl)) {
     processedUrl = getGoogleDriveDirectUrl(processedUrl);
     console.log("Converted Google Drive URL to:", processedUrl);
-  }
-  
-  // Handle relative URLs by prepending the base URL for published apps
-  if (isRelativeUrl(processedUrl)) {
-    const baseUrl = window.location.origin;
-    processedUrl = `${baseUrl}/${processedUrl}`;
-    console.log("Converted relative URL to absolute:", processedUrl);
   }
   
   // Detect the audio format from the URL
@@ -470,6 +380,37 @@ export const playAudio = (
       audioInstance = null;
     });
   }, 50);
+};
+
+// Helper function to handle SoundCloud URLs
+const handleSoundCloudUrl = (url: string, onPlay?: () => void, onEnd?: () => void, onError?: (error: any) => void): void => {
+  // Try to match the URL pattern to extract the track ID or username/track-name
+  const trackPath = url.match(/soundcloud\.com\/([^\/]+\/[^\/]+)/)?.[1];
+  
+  if (!trackPath) {
+    console.error('Could not extract SoundCloud track information from URL:', url);
+    if (onError) onError(new Error('Could not process SoundCloud link'));
+    return;
+  }
+
+  // We need to use window.open as SoundCloud's embedded iframe has security restrictions
+  // that prevent autoplay in many browsers without user interaction
+  window.open(url, '_blank');
+  
+  // Since we're opening in a new tab, we need to notify the user
+  toast({
+    title: "SoundCloud Audio",
+    description: "SoundCloud audio opened in a new tab. Please play it there for the best experience.",
+    variant: "default",
+  });
+  
+  // Simulate playback for UI purposes
+  if (onPlay) onPlay();
+  
+  // Simulate end after a reasonable time for UI to return to normal
+  setTimeout(() => {
+    if (onEnd) onEnd();
+  }, 5000);
 };
 
 export const stopAudio = (): void => {
