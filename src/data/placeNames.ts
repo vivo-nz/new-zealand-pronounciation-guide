@@ -25,7 +25,9 @@ export const placeNames: PlaceName[] = [
                 name === "Hinemoa Street" ? "hinemoa-st-audio.m4a" : 
                 name === "Te Atatu" ? "te-atatu-audio.m4a" : 
                 name === "Kamo" ? "kamo-audio.m4a" : 
-                name === "Takanini" ? "takanini-audio.m4a" : "",
+                name === "Takanini" ? "takanini-audio.m4a" : 
+                // For all other places, generate the audio URL using a consistent pattern
+                `${name.toLowerCase().replace(/ /g, '-')}-audio.m4a`,
       description: getPlaceDescription(name)
     }))
 ];
