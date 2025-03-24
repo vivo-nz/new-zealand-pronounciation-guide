@@ -1,4 +1,3 @@
-
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -26,6 +25,7 @@ export const placeNames: PlaceName[] = [
                 name === "Te Atatu" ? "te-atatu-audio.mp3" : 
                 name === "Kamo" ? "kamo-audio.mp3" : 
                 name === "Takanini" ? "takanini-audio.mp3" : 
+                name === "Takapuna" ? "takapuna.1.mp3" : 
                 // For all other places, generate the audio URL using a consistent pattern
                 `${name.toLowerCase().replace(/ /g, '-')}-audio.mp3`,
       description: getPlaceDescription(name)
