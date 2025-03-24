@@ -4,6 +4,7 @@ import { Play, Pause, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playAudio, stopAudio } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
+import { isValidAudioUrl } from '@/lib/utils';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -16,7 +17,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [audioAvailable, setAudioAvailable] = useState(true);
+  const [audioAvailable, setAudioAvailable] = useState(isValidAudioUrl(audioUrl));
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -24,11 +25,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
     setHasError(false);
     
     // Check if the audio URL is empty or invalid
-    if (!audioUrl || audioUrl.trim() === '') {
-      setAudioAvailable(false);
-    } else {
-      setAudioAvailable(true);
-    }
+    setAudioAvailable(isValidAudioUrl(audioUrl));
     
     return () => {
       isMounted.current = false;
@@ -83,6 +80,17 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
     );
   };
 
+  // Get the appropriate icon based on the current state
+  const renderIcon = () => {
+    if (isPlaying) {
+      return <Pause size={iconSizes[size]} className="animation-pulse-subtle" />;
+    } else if (!audioAvailable || hasError) {
+      return <AlertCircle size={iconSizes[size]} />;
+    } else {
+      return <Play size={iconSizes[size]} className="ml-0.5" />;
+    }
+  };
+
   const sizeClasses = {
     sm: "h-8 w-8",
     md: "h-10 w-10",
@@ -113,13 +121,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {isPlaying ? (
-          <Pause size={iconSizes[size]} className="animation-pulse-subtle" />
-        ) : !audioAvailable || hasError ? (
-          <AlertCircle size={iconSizes[size]} />
-        ) : (
-          <Play size={iconSizes[size]} className="ml-0.5" />
-        )}
+        {renderIcon()}
       </button>
 
       {isPlaying && (
