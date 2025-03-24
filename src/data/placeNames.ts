@@ -12,7 +12,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "42",
     name: "Mt Maunganui",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/maunganui-audio.mp3",
+    audioUrl: "mt-maunganui-audio.m4a",
     description: "Coastal suburb of Tauranga"
   },
   // Add all other places from placeTypes object, excluding Mt Maunganui which is already defined
