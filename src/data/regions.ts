@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -66,7 +65,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Bayfair": { type: 'store' },
   "Bethlehem": { type: 'store' },
   "Cameron Road": { type: 'store' },
-  "Hinemoa": { type: 'store' },
+  "Hinemoa Street": { type: 'store' },  // Changed from "Hinemoa" to "Hinemoa Street"
   "Mt Maunganui": { type: 'store' },
   "Papamoa": { type: 'store' },
   "Redwood": { type: 'store' },
@@ -200,7 +199,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Bayfair", 
     "Bethlehem", 
     "Cameron Road",
-    "Hinemoa",
+    "Hinemoa Street",  // Changed from "Hinemoa" to "Hinemoa Street"
     "Mt Maunganui", 
     "Papamoa", 
     "Redwood",

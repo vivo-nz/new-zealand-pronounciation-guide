@@ -1,3 +1,4 @@
+
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -21,7 +22,7 @@ export const placeNames: PlaceName[] = [
       id: (index + 100).toString(),
       name,
       audioUrl: name === "Taupo" ? "taupo-audio.m4a" : 
-                name === "Hinemoa" ? "hinemoa-st-audio.m4a" : "",
+                name === "Hinemoa Street" ? "hinemoa-st-audio.m4a" : "",  // Updated to match new name
       description: getPlaceDescription(name)
     }))
 ];
