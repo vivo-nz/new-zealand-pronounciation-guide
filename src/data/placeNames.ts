@@ -340,7 +340,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "57",
     name: "Redwood - Rotorua",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/redwood-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/redwood-rotorua-audio.mp3",
     description: "A shopping Centre in Rotorua"
   },
   {
