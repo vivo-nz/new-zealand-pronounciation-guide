@@ -46,9 +46,9 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Takapuna Anzac": { type: 'store' },
   "Te Atatu": { type: 'store' },
   "The Boundary": { type: 'store' },
+  "The Grange Warkworth": { type: 'store' },
   "Western Heights": { type: 'store' },
   "Westgate": { type: 'store' },
-  "Grange Warkworth": { type: 'store' },
   
   // Waikato
   "Hamilton": { type: 'city' },
@@ -162,7 +162,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Botany", 
     "Browns Bay", 
     "Chancery",
-    "Grange Warkworth", 
+    "The Grange Warkworth", 
     "Howick", 
     "Kingsland", 
     "Manukau", 
