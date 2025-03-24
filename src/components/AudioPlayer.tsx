@@ -16,14 +16,23 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [errorDisplayed, setErrorDisplayed] = useState(false); // Track if error is already displayed
   const isMounted = useRef(true);
+  const errorToastRef = useRef<{ dismiss: () => void } | null>(null);
 
   // Debug log to check if component is being rendered with correct props
   console.log(`AudioPlayer rendered for ${placeName} with URL: ${audioUrl}`);
 
   useEffect(() => {
-    // Reset error state when component receives a new audioUrl
+    // Reset error states when component receives a new audioUrl
     setHasError(false);
+    setErrorDisplayed(false);
+    
+    // Clear any existing error toast when audio URL changes
+    if (errorToastRef.current) {
+      errorToastRef.current.dismiss();
+      errorToastRef.current = null;
+    }
     
     return () => {
       isMounted.current = false;
@@ -31,10 +40,18 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       if (isPlaying) {
         stopAudio();
       }
+      
+      // Dismiss any error toasts on unmount
+      if (errorToastRef.current) {
+        errorToastRef.current.dismiss();
+      }
     };
   }, [audioUrl, placeName, isPlaying]);
 
   const handlePlayClick = () => {
+    // Don't allow clicks if we're in an error state
+    if (hasError) return;
+    
     console.log(`Play button clicked for ${placeName}`);
     
     if (isPlaying) {
@@ -46,6 +63,13 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
 
     // Reset error state on new play attempt
     setHasError(false);
+    setErrorDisplayed(false);
+    
+    // Clear any existing error toast when trying to play again
+    if (errorToastRef.current) {
+      errorToastRef.current.dismiss();
+      errorToastRef.current = null;
+    }
     
     console.log(`Attempting to play audio for ${placeName}`);
     playAudio(
@@ -64,12 +88,15 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       },
       (error) => {
         console.error(`Audio error for ${placeName}:`, error);
-        if (isMounted.current) {
+        if (isMounted.current && !errorDisplayed) {
           setHasError(true);
           setIsPlaying(false);
-          toast({
+          setErrorDisplayed(true); // Mark that we've displayed an error
+
+          // Only show the toast if we haven't already
+          errorToastRef.current = toast({
             title: "Audio Error",
-            description: `Could not play audio for "${placeName}". Please try again.`,
+            description: `Could not play audio for "${placeName}". Please try again later.`,
             variant: "destructive",
           });
         }
@@ -108,7 +135,8 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
           isPlaying 
             ? "bg-primary/10 border-primary/20 text-primary" 
             : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
-          isHovered && !isPlaying ? "scale-110" : "scale-100"
+          hasError ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
+          isHovered && !isPlaying && !hasError ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}

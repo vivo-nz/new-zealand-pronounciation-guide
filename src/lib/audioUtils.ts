@@ -1,6 +1,8 @@
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
+const failedAudioFiles = new Set<string>();
+const MAX_FORMAT_RETRIES = 1;
 
 // Helper to check if a URL is from SoundCloud
 const isSoundCloudUrl = (url: string): boolean => {
@@ -170,10 +172,22 @@ const tryAlternativeFormats = (
   
   console.log(`Will try formats in this order:`, formats);
   
+  // Generate a unique key for this base URL to track failed attempts
+  const baseUrlKey = `${baseName}_attempts`;
+
+  // If we've already tried and failed with this file, don't try again
+  if (failedAudioFiles.has(baseUrlKey)) {
+    console.log(`Already tried all formats for ${baseName}, not retrying`);
+    if (onError) onError(new Error('All audio formats previously failed to load'));
+    return;
+  }
+  
   // Function to try each format recursively
   const tryFormat = (index: number) => {
     if (index >= formats.length) {
       console.error('All audio formats failed to load');
+      // Add to failed files set to prevent future attempts
+      failedAudioFiles.add(baseUrlKey);
       if (onError) onError(new Error('All audio formats failed to load'));
       return;
     }
@@ -181,14 +195,32 @@ const tryAlternativeFormats = (
     const url = `${baseName}.${formats[index]}`;
     console.log(`Trying format ${index + 1}/${formats.length}: ${url}`);
     
+    // Skip this format if we've already tried it and it failed
+    const formatKey = `${url}_format`;
+    if (failedAudioFiles.has(formatKey)) {
+      console.log(`Format ${formats[index]} already failed before, skipping`);
+      tryFormat(index + 1);
+      return;
+    }
+    
     // Add cache buster
     const urlWithCacheBuster = url + (url.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
     
     const audio = new Audio();
     audio.crossOrigin = "anonymous";
     
+    // Set a timeout for loading
+    let loadTimeout = setTimeout(() => {
+      console.log(`Timeout for format ${formats[index]}`);
+      // Mark this format as failed
+      failedAudioFiles.add(formatKey);
+      audio.src = ''; // Clear source to stop loading
+      tryFormat(index + 1);
+    }, 3000);
+    
     // Set up event listeners
     audio.addEventListener('canplaythrough', () => {
+      clearTimeout(loadTimeout);
       console.log(`Format ${formats[index]} loaded successfully`);
       
       if (onPlay) onPlay();
@@ -200,22 +232,19 @@ const tryAlternativeFormats = (
       
       audio.play().catch(err => {
         console.error(`Error playing ${formats[index]} format:`, err);
+        // Mark this format as failed
+        failedAudioFiles.add(formatKey);
         tryFormat(index + 1);
       });
     });
     
     audio.addEventListener('error', (e) => {
+      clearTimeout(loadTimeout);
       console.warn(`Format ${formats[index]} failed to load:`, e);
+      // Mark this format as failed
+      failedAudioFiles.add(formatKey);
       tryFormat(index + 1);
     });
-    
-    // Add load timeout to handle scenarios where neither error nor canplaythrough fire
-    let loadTimeout = setTimeout(() => {
-      console.log(`Timeout for format ${formats[index]}`);
-      if (audio.readyState < 3) { // HAVE_FUTURE_DATA
-        tryFormat(index + 1);
-      }
-    }, 3000);
     
     // Clean up timeout if we do get a valid response
     audio.addEventListener('loadeddata', () => {
@@ -300,6 +329,13 @@ export const playAudio = (
 ): void => {
   console.log("Original audio URL:", audioUrl);
 
+  // Skip if we've already tried and failed with this exact URL
+  if (failedAudioFiles.has(audioUrl)) {
+    console.log(`Already tried ${audioUrl} and failed, not retrying`);
+    if (onError) onError(new Error('Audio file previously failed to load'));
+    return;
+  }
+
   // Check if it's a SoundCloud URL
   if (isSoundCloudUrl(audioUrl)) {
     handleSoundCloudUrl(audioUrl, onPlay, onEnd, onError);
@@ -315,12 +351,17 @@ export const playAudio = (
     console.log("Converted relative URL to absolute:", processedUrl);
     
     // Force a fallback if the audio file doesn't contain 'audio' in the name
-    // This helps with files like takapuna.1.mp3 that might not follow naming conventions
+    // But only if it's not already a special file like .1. format
     if (!processedUrl.toLowerCase().includes('audio') && !processedUrl.includes('.1.')) {
       const baseName = processedUrl.substring(0, processedUrl.lastIndexOf('.'));
       console.log("Using fallback URL pattern for:", processedUrl);
-      processedUrl = `${baseName}-audio.mp3`;
-      console.log("Fallback URL:", processedUrl);
+      const fallbackUrl = `${baseName}-audio.mp3`;
+      
+      // Only use the fallback if the original isn't in the failed set
+      if (!failedAudioFiles.has(processedUrl)) {
+        processedUrl = fallbackUrl;
+        console.log("Fallback URL:", processedUrl);
+      }
     }
   }
 
@@ -403,12 +444,41 @@ export const playAudio = (
     console.log('Audio error code:', error?.code);
     console.log('Audio error message:', error?.message);
     
+    // Mark this URL as failed
+    failedAudioFiles.add(audioUrl);
+    
     // Try alternative formats if the main format fails
     console.log('Trying alternative audio formats...');
     tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
     
     // Clear the current audio instance
     audioInstance = null;
+  });
+
+  // Set a timeout to handle case where neither error nor canplay events fire
+  const loadTimeout = setTimeout(() => {
+    if (!audioInstance) return;
+    
+    if (audioInstance.readyState < 3) { // HAVE_FUTURE_DATA
+      console.error('Audio load timeout:', processedUrl);
+      // Mark this URL as failed
+      failedAudioFiles.add(audioUrl);
+      
+      // Try alternative formats after timeout
+      tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
+      
+      // Clear the current audio instance
+      audioInstance = null;
+    }
+  }, 5000);
+
+  // Clear the timeout if the audio loads or errors
+  audioInstance.addEventListener('canplaythrough', () => {
+    clearTimeout(loadTimeout);
+  });
+  
+  audioInstance.addEventListener('error', () => {
+    clearTimeout(loadTimeout);
   });
 
   // Set source and load the audio
@@ -422,6 +492,9 @@ export const playAudio = (
     audioInstance.play().catch(err => {
       console.error('Failed to play audio:', err);
       console.log('Failed audio URL details:', processedUrl);
+      
+      // Mark this URL as failed
+      failedAudioFiles.add(audioUrl);
       
       // Try alternative formats if the main format fails
       console.log('Trying alternative audio formats after play failure...');
@@ -469,3 +542,4 @@ export const stopAudio = (): void => {
     audioInstance = null;
   }
 };
+
