@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -50,6 +51,64 @@ const getGoogleDriveDirectUrl = (url: string): string => {
   
   // Convert to direct download URL
   return `https://drive.google.com/uc?export=download&id=${fileId}`;
+};
+
+// NEW: Function to check if an audio file actually exists
+export const checkAudioFileExists = (url: string, callback: (exists: boolean) => void): void => {
+  // If URL is not valid, immediately return false
+  if (!url || url.trim() === '') {
+    callback(false);
+    return;
+  }
+  
+  // For SoundCloud URLs, we'll assume they exist
+  if (isSoundCloudUrl(url)) {
+    callback(true);
+    return;
+  }
+  
+  // For GitHub URLs, we need to ensure they're in raw format
+  let processedUrl = url;
+  if (isGitHubUrl(url)) {
+    processedUrl = getGitHubRawUrl(url);
+  }
+  
+  // Fix special characters in the URL
+  processedUrl = fixSpecialCharactersInUrl(processedUrl);
+  
+  // For Google Drive URLs, convert to direct URL
+  if (isGoogleDriveUrl(processedUrl)) {
+    processedUrl = getGoogleDriveDirectUrl(processedUrl);
+  }
+  
+  // Add a cache buster to avoid caching issues
+  processedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
+  
+  // Try to fetch the HEAD of the URL to check if it exists
+  fetch(processedUrl, { method: 'HEAD' })
+    .then(response => {
+      callback(response.ok);
+    })
+    .catch(() => {
+      // For local URLs, we'll try a different approach by creating an Audio element
+      if (isLocalUrl(url) || url.indexOf('http') !== 0) {
+        const audio = new Audio();
+        audio.onloadedmetadata = () => {
+          callback(true);
+        };
+        audio.onerror = () => {
+          callback(false);
+        };
+        audio.src = processedUrl;
+        
+        // Set a timeout in case neither event fires
+        setTimeout(() => {
+          callback(false);
+        }, 3000);
+      } else {
+        callback(false);
+      }
+    });
 };
 
 // Function to handle SoundCloud URLs
@@ -306,6 +365,13 @@ export const playAudio = (
     console.log("Converted Google Drive URL to:", processedUrl);
   }
   
+  // Handle relative URLs by prepending the base URL for published apps
+  if (!processedUrl.startsWith('http') && !processedUrl.startsWith('/')) {
+    const baseUrl = window.location.origin;
+    processedUrl = `${baseUrl}/${processedUrl}`;
+    console.log("Converted relative URL to absolute:", processedUrl);
+  }
+  
   // Detect the audio format from the URL
   const fileExtension = processedUrl.split('.').pop()?.toLowerCase() || '';
   
@@ -316,7 +382,7 @@ export const playAudio = (
   // If format is not supported, try alternative formats right away
   if (!isFormatSupported && ['m4a', 'mp3', 'wav', 'ogg'].includes(fileExtension)) {
     console.log(`Browser doesn't support ${fileExtension}, trying alternative formats...`);
-    tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
+    tryAlternativeFormats(processedUrl, onPlay, onEnd, onError);
     return;
   }
   

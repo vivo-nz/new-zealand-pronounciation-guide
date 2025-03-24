@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { playAudio, stopAudio } from '@/lib/audioUtils';
+import { playAudio, stopAudio, checkAudioFileExists } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
 import { isValidAudioUrl } from '@/lib/utils';
 
@@ -17,15 +17,27 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [audioAvailable, setAudioAvailable] = useState(isValidAudioUrl(audioUrl));
+  const [audioAvailable, setAudioAvailable] = useState(true);
   const isMounted = useRef(true);
+  const audioCheckedRef = useRef(false);
 
   useEffect(() => {
     // Reset error state when component receives a new audioUrl
     setHasError(false);
     
-    // Check if the audio URL is empty or invalid
-    setAudioAvailable(isValidAudioUrl(audioUrl));
+    // First check if the URL string is valid
+    const isValidUrl = isValidAudioUrl(audioUrl);
+    setAudioAvailable(isValidUrl);
+    
+    // Then check if the file actually exists (only do this once per URL)
+    if (isValidUrl && !audioCheckedRef.current) {
+      checkAudioFileExists(audioUrl, (exists) => {
+        if (isMounted.current) {
+          setAudioAvailable(exists);
+          audioCheckedRef.current = true;
+        }
+      });
+    }
     
     return () => {
       isMounted.current = false;
@@ -68,6 +80,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       (error) => {
         if (isMounted.current) {
           setHasError(true);
+          setAudioAvailable(false);
           setIsPlaying(false);
           toast({
             title: "Audio Error",
