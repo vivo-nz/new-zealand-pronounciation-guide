@@ -23,6 +23,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   // Auckland (cities and stores)
   "Auckland": { type: 'city' },
   "Albany Oteha Valley Road": { type: 'store' },
+  "Albany Northridge Plaza": { type: 'store' },
   "Alexandra Park": { type: 'store' },
   "Birkenhead": { type: 'store' },
   "Botany": { type: 'store' },
@@ -170,6 +171,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Milford", 
     "Mt Eden", 
     "Northridge Plaza",
+    "Albany Northridge Plaza",
     "Orewa", 
     "Ponsonby on Franklin", 
     "Pukekohe", 

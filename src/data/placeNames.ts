@@ -287,7 +287,7 @@ export const placeNames: PlaceName[] = [
     id: "48",
     name: "Albany Northridge Plaza",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/albany-northridge-plaza-audio.mp3",
-    description: "Shopping center in New Zealand"
+    description: "Shopping center in Albany, Auckland"
   },
   {
     id: "49",
