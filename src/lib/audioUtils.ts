@@ -1,3 +1,4 @@
+
 import { toast } from "@/hooks/use-toast";
 
 let audioInstance: HTMLAudioElement | null = null;
@@ -167,6 +168,81 @@ const fixSpecialCharactersInUrl = (url: string): string => {
     .replace(/ /g, '%20');
 };
 
+// Try alternative audio formats if the first one fails
+const tryAlternativeFormats = (
+  baseUrl: string, 
+  onPlay?: () => void, 
+  onEnd?: () => void,
+  onError?: (error: any) => void
+): void => {
+  // Extract the base filename without extension
+  const parts = baseUrl.split('.');
+  const extension = parts.pop() || '';
+  const baseName = parts.join('.');
+  
+  // Define alternative formats to try
+  const formats = ['m4a', 'mp3', 'wav', 'ogg'];
+  
+  // Remove the current format from the list and put it at the beginning
+  formats.splice(formats.indexOf(extension.toLowerCase()), 1);
+  formats.unshift(extension.toLowerCase());
+  
+  // Function to try each format recursively
+  const tryFormat = (index: number) => {
+    if (index >= formats.length) {
+      console.error('All audio formats failed to load');
+      if (onError) onError(new Error('All audio formats failed to load'));
+      return;
+    }
+    
+    const url = `${baseName}.${formats[index]}`;
+    console.log(`Trying format ${index + 1}/${formats.length}: ${url}`);
+    
+    // Add cache buster
+    const urlWithCacheBuster = url + (url.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
+    
+    const audio = new Audio(urlWithCacheBuster);
+    audio.crossOrigin = "anonymous";
+    
+    // Set up event listeners
+    audio.addEventListener('canplaythrough', () => {
+      console.log(`Format ${formats[index]} loaded successfully`);
+      
+      if (onPlay) onPlay();
+      
+      audio.addEventListener('ended', () => {
+        if (onEnd) onEnd();
+        audio.remove();
+      });
+      
+      audio.play().catch(err => {
+        console.error(`Error playing ${formats[index]} format:`, err);
+        tryFormat(index + 1);
+      });
+    });
+    
+    audio.addEventListener('error', () => {
+      console.log(`Format ${formats[index]} failed to load`);
+      tryFormat(index + 1);
+    });
+    
+    // Set source and load
+    audio.src = urlWithCacheBuster;
+    audio.load();
+    
+    // Set a timeout in case the audio never fires any events
+    setTimeout(() => {
+      if (audio.readyState === 0) {
+        console.log(`Timeout for format ${formats[index]}`);
+        tryFormat(index + 1);
+      }
+    }, 3000);
+  };
+  
+  // Start trying formats
+  tryFormat(0);
+};
+
 export const playAudio = (
   audioUrl: string, 
   onPlay?: () => void, 
@@ -234,19 +310,11 @@ export const playAudio = (
     console.log('Audio error code:', error?.code);
     console.log('Audio error message:', error?.message);
     
-    // Invoke onError callback if provided
-    if (onError) {
-      onError(error || new Error('Unknown audio error'));
-    } else {
-      // Otherwise show toast notification with shadcn/ui
-      toast({
-        title: "Audio Error",
-        description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
-        variant: "destructive",
-      });
-    }
+    // Try alternative formats if the main format fails
+    console.log('Trying alternative audio formats...');
+    tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
     
-    if (onEnd) onEnd();
+    // Clear the current audio instance
     audioInstance = null;
   });
 
@@ -258,19 +326,10 @@ export const playAudio = (
       console.error('Failed to play audio:', err);
       console.log('Failed audio URL details:', processedUrl);
       
-      // Invoke onError callback if provided
-      if (onError) {
-        onError(err);
-      } else {
-        // Otherwise show toast notification with shadcn/ui
-        toast({
-          title: "Audio Error",
-          description: "Could not play pronunciation audio. The audio file might be unavailable or in an unsupported format.",
-          variant: "destructive",
-        });
-      }
+      // Try alternative formats if the main format fails
+      console.log('Trying alternative audio formats after play failure...');
+      tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
       
-      if (onEnd) onEnd();
       audioInstance = null;
     });
   }, 50);
