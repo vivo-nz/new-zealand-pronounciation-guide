@@ -1,4 +1,3 @@
-
 export type Region = {
   id: string;
   name: string;
@@ -189,7 +188,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "The Grange Warkworth",
     "Western Heights",
     "Westgate",
-    "Auckland" // Moved to the end of the list as requested
+    "Auckland" // Kept at the end of the list as requested
   ],
   "waikato": [
     "Cambridge", 
