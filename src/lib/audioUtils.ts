@@ -180,12 +180,22 @@ const tryAlternativeFormats = (
   const extension = parts.pop() || '';
   const baseName = parts.join('.');
   
-  // Define alternative formats to try
-  const formats = ['m4a', 'mp3', 'wav', 'ogg'];
+  // Define alternative formats to try - updated order based on broader browser support
+  // mp3 has the widest browser support, followed by wav
+  const formats = ['mp3', 'wav', 'ogg', 'm4a'];
   
-  // Remove the current format from the list and put it at the beginning
-  formats.splice(formats.indexOf(extension.toLowerCase()), 1);
-  formats.unshift(extension.toLowerCase());
+  // Remove the current format from the list if it exists
+  const currentFormatIndex = formats.indexOf(extension.toLowerCase());
+  if (currentFormatIndex !== -1) {
+    formats.splice(currentFormatIndex, 1);
+  }
+  
+  // Put the current format at the beginning if it's a known audio format
+  if (['mp3', 'wav', 'ogg', 'm4a'].includes(extension.toLowerCase())) {
+    formats.unshift(extension.toLowerCase());
+  }
+  
+  console.log(`Will try formats in this order:`, formats);
   
   // Function to try each format recursively
   const tryFormat = (index: number) => {
@@ -201,7 +211,7 @@ const tryAlternativeFormats = (
     // Add cache buster
     const urlWithCacheBuster = url + (url.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
     
-    const audio = new Audio(urlWithCacheBuster);
+    const audio = new Audio();
     audio.crossOrigin = "anonymous";
     
     // Set up event listeners
@@ -221,26 +231,49 @@ const tryAlternativeFormats = (
       });
     });
     
-    audio.addEventListener('error', () => {
-      console.log(`Format ${formats[index]} failed to load`);
+    audio.addEventListener('error', (e) => {
+      console.log(`Format ${formats[index]} failed to load:`, e);
       tryFormat(index + 1);
+    });
+    
+    // Add load timeout to handle scenarios where neither error nor canplaythrough fire
+    let loadTimeout = setTimeout(() => {
+      console.log(`Timeout for format ${formats[index]}`);
+      if (audio.readyState < 3) { // HAVE_FUTURE_DATA
+        tryFormat(index + 1);
+      }
+    }, 3000);
+    
+    // Clean up timeout if we do get a valid response
+    audio.addEventListener('loadeddata', () => {
+      clearTimeout(loadTimeout);
     });
     
     // Set source and load
     audio.src = urlWithCacheBuster;
     audio.load();
-    
-    // Set a timeout in case the audio never fires any events
-    setTimeout(() => {
-      if (audio.readyState === 0) {
-        console.log(`Timeout for format ${formats[index]}`);
-        tryFormat(index + 1);
-      }
-    }, 3000);
   };
   
   // Start trying formats
   tryFormat(0);
+};
+
+// Check if the audio format is supported by the browser
+const isAudioFormatSupported = (format: string): boolean => {
+  const audio = document.createElement('audio');
+  
+  // Check basic MIME type support
+  const mimeTypes = {
+    'm4a': 'audio/mp4; codecs="mp4a.40.2"',
+    'mp3': 'audio/mpeg',
+    'wav': 'audio/wav',
+    'ogg': 'audio/ogg; codecs="vorbis"'
+  };
+  
+  const type = mimeTypes[format as keyof typeof mimeTypes];
+  if (!type) return false;
+  
+  return audio.canPlayType(type) !== '';
 };
 
 export const playAudio = (
@@ -274,6 +307,20 @@ export const playAudio = (
     console.log("Converted Google Drive URL to:", processedUrl);
   }
   
+  // Detect the audio format from the URL
+  const fileExtension = processedUrl.split('.').pop()?.toLowerCase() || '';
+  
+  // Check browser support for this audio format
+  const isFormatSupported = isAudioFormatSupported(fileExtension);
+  console.log(`Audio format ${fileExtension} supported by browser: ${isFormatSupported}`);
+  
+  // If format is not supported, try alternative formats right away
+  if (!isFormatSupported && ['m4a', 'mp3', 'wav', 'ogg'].includes(fileExtension)) {
+    console.log(`Browser doesn't support ${fileExtension}, trying alternative formats...`);
+    tryAlternativeFormats(audioUrl, onPlay, onEnd, onError);
+    return;
+  }
+  
   // Add a cache buster to avoid caching issues
   processedUrl = processedUrl + (processedUrl.includes('?') ? '&' : '?') + 'cb=' + new Date().getTime();
   console.log("Final audio URL with cache buster:", processedUrl);
@@ -285,7 +332,7 @@ export const playAudio = (
   }
 
   // Create and play new audio
-  audioInstance = new Audio(processedUrl);
+  audioInstance = new Audio();
   audioInstance.crossOrigin = "anonymous"; // Handle CORS issues
   
   // Log the audio URL being used
@@ -317,6 +364,10 @@ export const playAudio = (
     // Clear the current audio instance
     audioInstance = null;
   });
+
+  // Set source and load the audio
+  audioInstance.src = processedUrl;
+  audioInstance.load();
 
   // Play the audio with a slight delay to ensure smooth animation
   setTimeout(() => {
