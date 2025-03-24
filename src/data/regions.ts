@@ -157,8 +157,8 @@ export const regions: Region[] = [
 export const placeNameRegions: Record<string, string[]> = {
   "northland": ["Kamo", "Whangarei", "Rathbone", "Strand Mall", "Northland"],
   "auckland": [
+    "Albany Oteha Valley Road",
     "Albany Northridge Plaza",
-    "Albany Oteha Valley Road", 
     "Alexandra Park",
     "Birkenhead", 
     "Botany", 
