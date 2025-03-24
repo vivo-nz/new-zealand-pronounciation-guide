@@ -16,11 +16,19 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [audioAvailable, setAudioAvailable] = useState(true);
   const isMounted = useRef(true);
 
   useEffect(() => {
     // Reset error state when component receives a new audioUrl
     setHasError(false);
+    
+    // Check if the audio URL is empty or invalid
+    if (!audioUrl || audioUrl.trim() === '') {
+      setAudioAvailable(false);
+    } else {
+      setAudioAvailable(true);
+    }
     
     return () => {
       isMounted.current = false;
@@ -29,6 +37,16 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   }, [audioUrl]);
 
   const handlePlayClick = () => {
+    // If audio is not available, show a toast and return
+    if (!audioAvailable) {
+      toast({
+        title: "Audio Unavailable",
+        description: `No pronunciation audio available for "${placeName}".`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (isPlaying) {
       stopAudio();
       setIsPlaying(false);
@@ -80,13 +98,13 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   return (
     <div className={cn("flex flex-col items-center", className)}>
       <button
-        aria-label={isPlaying ? `Pause pronunciation of ${placeName}` : `Play pronunciation of ${placeName}`}
+        aria-label={!audioAvailable ? `No pronunciation available for ${placeName}` : isPlaying ? `Pause pronunciation of ${placeName}` : `Play pronunciation of ${placeName}`}
         className={cn(
           "glass-morphism rounded-full flex items-center justify-center transition-all duration-300",
           sizeClasses[size],
           isPlaying 
             ? "bg-primary/10 border-primary/20 text-primary" 
-            : hasError
+            : !audioAvailable || hasError
               ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
               : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
           isHovered && !isPlaying ? "scale-110" : "scale-100"
@@ -97,7 +115,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
       >
         {isPlaying ? (
           <Pause size={iconSizes[size]} className="animation-pulse-subtle" />
-        ) : hasError ? (
+        ) : !audioAvailable || hasError ? (
           <AlertCircle size={iconSizes[size]} />
         ) : (
           <Play size={iconSizes[size]} className="ml-0.5" />
