@@ -569,7 +569,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "95",
     name: "Hamilton",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/waikato-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/hamilton-audio.mp3",
     description: "City in the Waikato region"
   },
   {
