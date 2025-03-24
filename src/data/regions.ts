@@ -50,6 +50,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "The Boundary": { type: 'store' },
   "Western Heights": { type: 'store' },
   "Westgate": { type: 'store' },
+  "Grange Warkworth": { type: 'store' },
   
   // Waikato
   "Hamilton": { type: 'city' },
@@ -118,7 +119,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Cashell Square": { type: 'store' },
   "Fanshawe Street": { type: 'store' },
   "Ferrymead": { type: 'store' },
-  "Grange Warkworth": { type: 'store' },
   "Ilam": { type: 'store' },
   "Merivale": { type: 'store' },
   "Northlands": { type: 'store' },
@@ -166,6 +166,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Botany", 
     "Browns Bay", 
     "Chancery",
+    "Grange Warkworth", 
     "Howick", 
     "Kingsland", 
     "Manukau", 
@@ -236,7 +237,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Christchurch",
     "Fanshawe Street", 
     "Ferrymead", 
-    "Grange Warkworth", 
     "Ilam", 
     "Merivale", 
     "Northlands", 
