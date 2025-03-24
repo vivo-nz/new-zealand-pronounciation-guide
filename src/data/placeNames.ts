@@ -12,7 +12,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "42",
     name: "Mt Maunganui",
-    audioUrl: "mt-maunganui-audio.m4a",
+    audioUrl: "mt-maunganui-audio.mp3",
     description: "Coastal suburb of Tauranga"
   },
   // Add all other places from placeTypes object, excluding Mt Maunganui which is already defined
@@ -21,13 +21,13 @@ export const placeNames: PlaceName[] = [
     .map((name, index) => ({
       id: (index + 100).toString(),
       name,
-      audioUrl: name === "Taupo" ? "taupo-audio.m4a" : 
-                name === "Hinemoa Street" ? "hinemoa-st-audio.m4a" : 
-                name === "Te Atatu" ? "te-atatu-audio.m4a" : 
-                name === "Kamo" ? "kamo-audio.m4a" : 
-                name === "Takanini" ? "takanini-audio.m4a" : 
+      audioUrl: name === "Taupo" ? "taupo-audio.mp3" : 
+                name === "Hinemoa Street" ? "hinemoa-st-audio.mp3" : 
+                name === "Te Atatu" ? "te-atatu-audio.mp3" : 
+                name === "Kamo" ? "kamo-audio.mp3" : 
+                name === "Takanini" ? "takanini-audio.mp3" : 
                 // For all other places, generate the audio URL using a consistent pattern
-                `${name.toLowerCase().replace(/ /g, '-')}-audio.m4a`,
+                `${name.toLowerCase().replace(/ /g, '-')}-audio.mp3`,
       description: getPlaceDescription(name)
     }))
 ];
