@@ -1,4 +1,3 @@
-
 import { placeTypes, placeNameRegions, regions } from './regions';
 
 export type PlaceName = {
@@ -21,7 +20,8 @@ export const placeNames: PlaceName[] = [
     .map((name, index) => ({
       id: (index + 100).toString(),
       name,
-      audioUrl: name === "Taupo" ? "taupo-audio.m4a" : "",
+      audioUrl: name === "Taupo" ? "taupo-audio.m4a" : 
+                name === "Hinemoa" ? "hinemoa-st-audio.m4a" : "",
       description: getPlaceDescription(name)
     }))
 ];
