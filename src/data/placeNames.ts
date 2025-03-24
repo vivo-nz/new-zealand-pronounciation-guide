@@ -1,4 +1,3 @@
-
 import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
@@ -251,7 +250,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "42",
     name: "Mt Maunganui",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/maunganui-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/mt-maunganui-audio.mp3",
     description: "Mount Maunganui, coastal suburb of Tauranga"
   },
   {
