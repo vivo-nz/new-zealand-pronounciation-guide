@@ -1,10 +1,9 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, VolumeX } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { playAudio, stopAudio, checkAudioFileExists } from '@/lib/audioUtils';
+import { playAudio, stopAudio } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
-import { isValidAudioUrl } from '@/lib/utils';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -17,29 +16,11 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [audioAvailable, setAudioAvailable] = useState(true);
   const isMounted = useRef(true);
-  const audioCheckedRef = useRef(false);
 
   useEffect(() => {
     // Reset error state when component receives a new audioUrl
     setHasError(false);
-    
-    // First check if the URL string is valid
-    const isValidUrl = isValidAudioUrl(audioUrl);
-    setAudioAvailable(isValidUrl);
-    
-    // Then check if the file actually exists (only do this once per URL)
-    if (isValidUrl && !audioCheckedRef.current) {
-      console.log(`Checking if audio exists for ${placeName}:`, audioUrl);
-      checkAudioFileExists(audioUrl, (exists) => {
-        console.log(`Audio exists for ${placeName}:`, exists);
-        if (isMounted.current) {
-          setAudioAvailable(exists);
-          audioCheckedRef.current = true;
-        }
-      });
-    }
     
     return () => {
       isMounted.current = false;
@@ -48,16 +29,6 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   }, [audioUrl, placeName]);
 
   const handlePlayClick = () => {
-    // If audio is not available, show a toast and return
-    if (!audioAvailable) {
-      toast({
-        title: "Audio Unavailable",
-        description: `No pronunciation audio available for "${placeName}".`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (isPlaying) {
       stopAudio();
       setIsPlaying(false);
@@ -86,7 +57,6 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         console.error(`Audio error for ${placeName}:`, error);
         if (isMounted.current) {
           setHasError(true);
-          setAudioAvailable(false);
           setIsPlaying(false);
           toast({
             title: "Audio Error",
@@ -102,8 +72,6 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const renderIcon = () => {
     if (isPlaying) {
       return <Pause size={iconSizes[size]} className="animation-pulse-subtle" />;
-    } else if (!audioAvailable) {
-      return <VolumeX size={iconSizes[size]} className="text-muted-foreground" />;
     } else {
       return <Play size={iconSizes[size]} className="ml-0.5" />;
     }
@@ -124,21 +92,18 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   return (
     <div className={cn("flex flex-col items-center", className)}>
       <button
-        aria-label={!audioAvailable ? `No pronunciation available for ${placeName}` : isPlaying ? `Pause pronunciation of ${placeName}` : `Play pronunciation of ${placeName}`}
+        aria-label={isPlaying ? `Pause pronunciation of ${placeName}` : `Play pronunciation of ${placeName}`}
         className={cn(
           "glass-morphism rounded-full flex items-center justify-center transition-all duration-300",
           sizeClasses[size],
-          !audioAvailable
-            ? "bg-muted/30 border-muted-foreground/20 text-muted-foreground"
-            : isPlaying 
-              ? "bg-primary/10 border-primary/20 text-primary" 
-              : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
-          isHovered && !isPlaying && audioAvailable ? "scale-110" : "scale-100"
+          isPlaying 
+            ? "bg-primary/10 border-primary/20 text-primary" 
+            : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
+          isHovered && !isPlaying ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        disabled={!audioAvailable}
       >
         {renderIcon()}
       </button>
