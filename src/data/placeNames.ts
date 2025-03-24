@@ -1,4 +1,3 @@
-
 import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
@@ -286,8 +285,8 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "48",
-    name: "Northridge Plaza",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/northridge-plaza-audio.mp3",
+    name: "Albany Northridge Plaza",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/albany-northridge-plaza-audio.mp3",
     description: "Shopping center in New Zealand"
   },
   {
@@ -591,4 +590,3 @@ export const placeNames: PlaceName[] = [
     description: "Region on the west coast of New Zealand's North Island"
   }
 ];
-
