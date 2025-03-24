@@ -16,7 +16,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "3",
     name: "Albany Oteha Valley Road",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/albany-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/albany-oteha-valley-road-audio.mp3",
     description: "Suburb on Auckland's North Shore"
   },
   {
