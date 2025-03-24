@@ -1,4 +1,5 @@
-import { PlaceName } from './placeNames';
+
+import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
   {

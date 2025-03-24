@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { PlaceName } from '@/data/placeNames';
+import { PlaceName } from '@/types/placeNames';
 import { Region, placeNameRegions, placeTypes } from '@/data/regions';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { AnimatePresence, motion } from 'framer-motion';

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { PlaceName } from '@/data/placeNames';
+import { PlaceName } from '@/types/placeNames';
 import PronunciationCard from './PronunciationCard';
 import EmptyState from './EmptyState';
 

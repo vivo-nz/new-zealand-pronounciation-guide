@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import AudioPlayer from './AudioPlayer';
-import { PlaceName } from '@/data/placeNames';
+import { PlaceName } from '@/types/placeNames';
 import { Building, Landmark, Map, Store } from 'lucide-react';
 import { placeTypes } from '@/data/regions';
 
