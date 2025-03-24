@@ -206,7 +206,7 @@ const tryAlternativeFormats = (
     });
     
     audio.addEventListener('error', (e) => {
-      console.log(`Format ${formats[index]} failed to load:`, e);
+      console.warn(`Format ${formats[index]} failed to load:`, e);
       tryFormat(index + 1);
     });
     
@@ -257,13 +257,40 @@ const getAbsoluteUrl = (url: string): string => {
     return url;
   }
   
-  // If it's a root-relative URL (starts with /)
-  if (url.startsWith('/')) {
-    return `${window.location.origin}${url}`;
+  // Remove any leading dots or slashes for consistency
+  let cleanUrl = url;
+  while (cleanUrl.startsWith('./') || cleanUrl.startsWith('../')) {
+    cleanUrl = cleanUrl.replace(/^\.\//, '').replace(/^\.\.\//, '');
   }
   
-  // If it's a truly relative URL (doesn't start with /)
-  return `${window.location.origin}/${url}`;
+  // If it's a root-relative URL (starts with /)
+  if (cleanUrl.startsWith('/')) {
+    // Remove the leading slash to prevent double slashes
+    cleanUrl = cleanUrl.substring(1);
+  }
+  
+  // For published apps, we need to check if we're running in a subdirectory
+  const baseUrl = window.location.origin;
+  const pathPrefix = window.location.pathname.split('/').slice(0, -1).join('/');
+  
+  // Construct the full URL
+  let fullUrl = `${baseUrl}`;
+  
+  // Add the path prefix if we're in a subdirectory
+  if (pathPrefix && pathPrefix !== '/') {
+    fullUrl += pathPrefix;
+  }
+  
+  // Ensure there's a slash between the base and the file
+  if (!fullUrl.endsWith('/')) {
+    fullUrl += '/';
+  }
+  
+  // Add the file path
+  fullUrl += cleanUrl;
+  
+  console.log(`Resolved relative URL "${url}" to absolute URL "${fullUrl}"`);
+  return fullUrl;
 };
 
 export const playAudio = (
