@@ -508,7 +508,7 @@ export const placeNames: PlaceName[] = [
   {
     id: "85",
     name: "Auckland",
-    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/auckland-audio.mp3",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/auckland.mp3",
     description: "New Zealand's largest city"
   },
   {
