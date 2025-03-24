@@ -22,7 +22,8 @@ export const placeNames: PlaceName[] = [
       id: (index + 100).toString(),
       name,
       audioUrl: name === "Taupo" ? "taupo-audio.m4a" : 
-                name === "Hinemoa Street" ? "hinemoa-st-audio.m4a" : "",  // Updated to match new name
+                name === "Hinemoa Street" ? "hinemoa-st-audio.m4a" : 
+                name === "Te Atatu" ? "te-atatu-audio.m4a" : "",
       description: getPlaceDescription(name)
     }))
 ];
