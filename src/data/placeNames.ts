@@ -1,3 +1,4 @@
+
 import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
@@ -564,6 +565,12 @@ export const placeNames: PlaceName[] = [
     name: "Rotorua",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/rotorua-audio.mp3",
     description: "City in the Bay of Plenty"
+  },
+  {
+    id: "95",
+    name: "Hamilton",
+    audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/waikato-audio.mp3",
+    description: "City in the Waikato region"
   },
   {
     id: "96",
