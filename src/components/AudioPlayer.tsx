@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, AlertCircle } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { playAudio, stopAudio } from '@/lib/audioUtils';
 import { toast } from "@/hooks/use-toast";
@@ -66,13 +66,12 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
         }
       },
       (error) => {
-        console.error("Audio player error:", error);
         if (isMounted.current) {
           setHasError(true);
           setIsPlaying(false);
           toast({
             title: "Audio Error",
-            description: `Could not play "${placeName}" pronunciation. The audio file might be unavailable or in an unsupported format.`,
+            description: `Could not play audio for "${placeName}".`,
             variant: "destructive",
           });
         }
@@ -84,8 +83,6 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
   const renderIcon = () => {
     if (isPlaying) {
       return <Pause size={iconSizes[size]} className="animation-pulse-subtle" />;
-    } else if (!audioAvailable || hasError) {
-      return <AlertCircle size={iconSizes[size]} />;
     } else {
       return <Play size={iconSizes[size]} className="ml-0.5" />;
     }
@@ -112,9 +109,7 @@ const AudioPlayer = ({ audioUrl, placeName, className, size = 'md' }: AudioPlaye
           sizeClasses[size],
           isPlaying 
             ? "bg-primary/10 border-primary/20 text-primary" 
-            : !audioAvailable || hasError
-              ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
-              : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
+            : "hover:bg-primary/5 hover:border-primary/10 hover:text-primary/80 text-foreground",
           isHovered && !isPlaying ? "scale-110" : "scale-100"
         )}
         onClick={handlePlayClick}
