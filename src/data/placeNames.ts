@@ -255,7 +255,7 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "42",
-    name: "Maunganui",
+    name: "Mt Maunganui",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/maunganui-audio.mp3",
     description: "Mount Maunganui, coastal suburb of Tauranga"
   },
