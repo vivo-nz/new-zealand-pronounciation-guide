@@ -123,7 +123,7 @@ export const placeTypes: Record<string, PlaceDetails> = {
   "Rolleston": { type: 'store' },
   
   // Central South
-  "Dunedin": { type: 'store' },
+  "George Street Dunedin": { type: 'store' },
   "Queenstown": { type: 'city' },
   "Oamaru": { type: 'store' },
   "George Street": { type: 'store' },
@@ -239,7 +239,6 @@ export const placeNameRegions: Record<string, string[]> = {
     "Rangiora", 
     "Rolleston"
   ],
-  "central_south": ["Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
+  "central_south": ["George Street Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };
-
