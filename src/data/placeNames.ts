@@ -1,4 +1,3 @@
-
 import { PlaceName } from '../types/placeNames';
 
 export const placeNames: PlaceName[] = [
@@ -402,7 +401,7 @@ export const placeNames: PlaceName[] = [
     id: "67",
     name: "Stratford",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/stratford-audio.mp3",
-    description: "Town in Taranaki"
+    description: "A small town in Taranaki"
   },
   {
     id: "68",
