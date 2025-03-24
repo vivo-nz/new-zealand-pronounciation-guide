@@ -6,17 +6,20 @@ import { placeNames } from '@/data/placeNames';
 import { regions } from '@/data/regions';
 import { Toaster } from "@/components/ui/toaster";
 import RegionAccordion from '@/components/RegionAccordion';
+import Header from '@/components/Header';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-blue-50 to-white px-4 py-12">
+    <div className="min-h-screen w-full bg-gradient-to-b from-blue-50 to-white">
+      <Header />
+      
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="container max-w-4xl mx-auto"
+        className="container max-w-4xl mx-auto px-4 py-8"
       >
         <div className="text-center mb-8">
           <motion.div
