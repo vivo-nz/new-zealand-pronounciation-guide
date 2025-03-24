@@ -586,7 +586,7 @@ export const placeNames: PlaceName[] = [
     id: "98",
     name: "Whangarei",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/whangarei-audio.mp3",
-    description: "Northernmost city in New Zealand"
+    description: "City in Northland"
   },
   {
     id: "99",
