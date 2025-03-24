@@ -44,10 +44,22 @@ const RegionAccordion = ({ placeNames, regions, searchQuery }: RegionAccordionPr
     }
   }, [searchQuery, placeNames]);
 
-  // Get unique place names in a region
+  // Get unique place names in a region - and maintain the order from placeNameRegions
   const getRegionPlaceNames = (regionId: string): PlaceName[] => {
     const regionPlaceIds = placeNameRegions[regionId] || [];
-    return filteredNames.filter(place => regionPlaceIds.includes(place.name));
+    // Create a new array preserving the original order from placeNameRegions
+    const orderedPlaces: PlaceName[] = [];
+    
+    // Loop through the region's place names in their defined order
+    for (const placeName of regionPlaceIds) {
+      // Find the matching PlaceName object
+      const place = filteredNames.find(p => p.name === placeName);
+      if (place) {
+        orderedPlaces.push(place);
+      }
+    }
+    
+    return orderedPlaces;
   };
 
   // Count only store-type places (green ones)
