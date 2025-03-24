@@ -75,7 +75,6 @@ export const placeTypes: Record<string, PlaceDetails> = {
   
   // Taranaki
   "New Plymouth": { type: 'city' },
-  "Devon": { type: 'store' },
   "Devon Street": { type: 'store' },
   "Stratford": { type: 'store' },
   "Taranaki": { type: 'city' },
@@ -209,7 +208,7 @@ export const placeNameRegions: Record<string, string[]> = {
     "Tauranga Crossing",
     "Whakatane"
   ],
-  "taranaki": ["Devon", "Devon Street", "New Plymouth", "Stratford", "Taranaki"],
+  "taranaki": ["Devon Street", "New Plymouth", "Stratford", "Taranaki"],
   "manawatu": ["Broadway", "Kelvin Grove", "Levin", "Manawatu", "Palmerston North", "Whanganui"],
   "hawkes_bay": ["Havelock North", "Napier"],
   "wellington": [
@@ -243,3 +242,4 @@ export const placeNameRegions: Record<string, string[]> = {
   "central_south": ["Dunedin", "George Street", "Oamaru", "Queenstown", "Remarkables Park"],
   "invercargill": ["Esk Street", "Invercargill", "Windsor"]
 };
+

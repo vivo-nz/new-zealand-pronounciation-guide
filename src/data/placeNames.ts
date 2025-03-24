@@ -1,3 +1,4 @@
+
 export interface PlaceName {
   id: string;
   name: string;
@@ -128,7 +129,7 @@ export const placeNames: PlaceName[] = [
   },
   {
     id: "21",
-    name: "Devon",
+    name: "Devon Street",
     audioUrl: "https://raw.githubusercontent.com/vivo-nz/new-zealand-pronounciation-guide/main/devon-audio.mp3",
     description: "Street in New Plymouth"
   },
